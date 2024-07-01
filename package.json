@@ -1,10 +1,10 @@
 {
-  "name": "paralect-hive",
-  "version": "1.0.0",
+  "name": "@paralect/hive",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
-    "hive": "./cli/cli.js"
+    "hive": "cli/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -56,5 +56,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
