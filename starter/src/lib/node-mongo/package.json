@@ -1,0 +1,74 @@
+{
+  "_args": [
+    [
+      "@paralect/node-mongo@2.1.1",
+      "/Users/igorkrasnik/Documents/work/trojanflix-api"
+    ]
+  ],
+  "_from": "@paralect/node-mongo@2.1.1",
+  "_id": "@paralect/node-mongo@2.1.1",
+  "_inBundle": false,
+  "_integrity": "sha512-IneYD4qTa2P0St3m3Zlw/nRXejTsrsepkmEy7Qw0KYjEQeoekr6gxC6edOPouupkQA0qBOUl4zQSdkaEIUn36w==",
+  "_location": "/@paralect/node-mongo",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "@paralect/node-mongo@2.1.1",
+    "name": "@paralect/node-mongo",
+    "escapedName": "@paralect%2fnode-mongo",
+    "scope": "@paralect",
+    "rawSpec": "2.1.1",
+    "saveSpec": null,
+    "fetchSpec": "2.1.1"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@paralect/node-mongo/-/node-mongo-2.1.1.tgz",
+  "_spec": "2.1.1",
+  "_where": "/Users/igorkrasnik/Documents/work/trojanflix-api",
+  "author": {
+    "name": "Paralect"
+  },
+  "bugs": {
+    "url": "https://github.com/paralect/node-mongo/issues"
+  },
+  "dependencies": {
+    "lodash": "4.17.20",
+    "monk": "7.3.2"
+  },
+  "description": "MongoDB wrapper for Node.JS 12",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "mocha": "^8.1.3",
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "homepage": "https://github.com/paralect/node-mongo#readme",
+  "keywords": [
+    "mongo",
+    "monk",
+    "paralect"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "@paralect/node-mongo",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paralect/node-mongo.git"
+  },
+  "scripts": {
+    "test": "run-s test:*",
+    "test:eslint": "eslint ./",
+    "test:mocha": "NODE_ENV=test mocha --exit --recursive -c -R spec src/index.test.js"
+  },
+  "version": "2.1.1"
+}
