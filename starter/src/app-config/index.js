@@ -24,6 +24,7 @@ const env = process.env.APP_ENV || "development";
 const config = {
   env,
   port: process.env.PORT || 3001,
+  domain: env === 'production' ? 'https://api.yourapp.com': process.env.DOMAIN || '',
   isDev: env === "development",
 
   mongoUri: process.env.MONGODB_URI,
