@@ -8,7 +8,7 @@ const fs = require("fs");
 
 const Koa = require("koa");
 const http = require("http");
-const config = require("config");
+const config = require("app-config");
 const logger = require("logger");
 const cors = require("@koa/cors");
 const helmet = require("koa-helmet");

@@ -1,4 +1,4 @@
-const config = require("config");
+const config = require("app-config");
 
 const { Emitter } = require("@socket.io/redis-emitter");
 const { createClient } = require("redis");

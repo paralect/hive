@@ -5,7 +5,7 @@ const requireDir = require("require-dir");
 const getSchemas = require("helpers/getSchemas");
 const getResources = require("helpers/getResources");
 
-const config = require("config");
+const config = require("app-config");
 const db = require("lib/node-mongo").connect(config.mongoUri);
 
 db.services = {};
@@ -29,8 +29,6 @@ db.init = async () => {
   );
 
   const resourcePaths = await getResources();
-
-  console.log('resourcePaths', resourcePaths);
 
   _.each(resourcePaths, ({ dir }) => {
     if (fs.existsSync(`${dir}/handlers`)) {

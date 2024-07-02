@@ -2,7 +2,7 @@ const { Server } = require("socket.io");
 const { createClient } = require("redis");
 const { createAdapter } = require("@socket.io/redis-adapter");
 
-const config = require("config");
+const config = require("app-config");
 const logger = require("logger");
 
 module.exports = (server) => {
