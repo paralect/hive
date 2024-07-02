@@ -1,0 +1,40 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.service }}
+  labels:
+    app: {{ .Values.service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.service }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: {{ .Values.service }}
+          image: {{ .Values.containerRegistry }}:{{ .Values.imagesVersion }}
+          env:
+            - name: PROJECT_ID
+              value: {{ .Values.projectId }}
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.port }}
+            initialDelaySeconds: 300
+            periodSeconds: 10
+          ports:
+            - containerPort: {{ .Values.port }}
+              protocol: TCP
+      nodeSelector:
+        doks.digitalocean.com/node-pool: {{ .Values.nodePool }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1

@@ -1,0 +1,26 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Values.service }}
+  labels:
+    app: {{ .Values.service }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    external-dns.alpha.kubernetes.io/hostname: {{ first .Values.domain }}
+    external-dns.alpha.kubernetes.io/ttl: "120" #optional
+spec:
+  ingressClassName: nginx
+  rules:
+  {{- range $domain := .Values.domain }}
+    - host: {{ $domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Values.service }}
+                port:
+                  number: {{ $.Values.port }}
+  {{- end}}

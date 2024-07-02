@@ -10,4 +10,4 @@ ENV APP_ENV=$APP_ENV
 
 WORKDIR /project
 
-CMD npm run dev 2>&1 | tee /project/logs/log.txt
+CMD npm run dev 2>&1
