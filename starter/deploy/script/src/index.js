@@ -42,7 +42,8 @@ const pushToKubernetes = async ({ imageTag, appName, deployConfig }) => {
       --set imagesVersion=${imageTag}  \
       --set domain={hive-api-${projectId}.paralect.co} \
       --set projectId=${projectId} \
-      --set mongoDbUri='${process.env.MONGODB_URI}'
+      --set env\[0\].name=MONGODB_URI \
+      --set env\[0\].value='${process.env.MONGODB_URI}' \
       -f ${deployDir}/staging.yaml   --timeout 35m`,
     {
       cwd: `/app`,
