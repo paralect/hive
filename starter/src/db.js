@@ -17,10 +17,20 @@ db.init = async () => {
   _.each(
     schemaPaths,
     ({ file: schemaFile, resourceName, name: schemaName }) => {
-      const schema = require(schemaFile);
-      db.schemas[schemaName] = schema;
+      let schema = require(schemaFile);
+      
+      if (process.env.HIVE_SRC) {
+        let extendSchemaPath = `${process.env.HIVE_SRC}/resources/${resourceName}/${schemaName}.extends.schema.js`;
+     
+        if (fs.existsSync(extendSchemaPath)) {
+          let extendsSchema = require(extendSchemaPath);
 
-      console.log("Registering service", resourceName);
+          schema = schema.append(extendsSchema);
+          console.log('schema', schema);
+        }
+      }
+
+      db.schemas[schemaName] = schema;
 
       db.services[schemaName] = db.createService(`${resourceName}`, {
         validate: (obj) => schema.validate(obj, { allowUnknown: true }),
