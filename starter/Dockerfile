@@ -1,13 +1,22 @@
-FROM --platform=linux/amd64 node:16.13.1-alpine3.13 as base
+FROM node:16.13.1-alpine3.13 as base
 RUN apk add --no-cache python3 py3-pip
 
-# On staging containers running in development mode
-ARG NODE_ENV=development
+ENV NODE_ENV=production
+ENV APP_ENV=production
 
-ARG APP_ENV
-ENV NODE_ENV=$NODE_ENV
-ENV APP_ENV=$APP_ENV
+WORKDIR /app
+EXPOSE 3001
+COPY ["./package*.json", "/app/"]
 
-WORKDIR /project
+RUN npm set progress=false && npm config set depth 0
 
-CMD npm run dev 2>&1
+RUN npm set-script prepare ""
+
+RUN npm ci --only=production --quiet
+
+COPY ./ ./
+
+RUN mkdir -p /project/logs
+RUN touch /project/logs/log.txt
+
+CMD npm start 2>&1 | tee /project/logs/log.txt

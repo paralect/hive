@@ -42,19 +42,12 @@ const pushToKubernetes = async ({ imageTag, appName, deployConfig }) => {
       --set imagesVersion=${imageTag}  \
       --set domain={hive-api-${projectId}.paralect.co} \
       --set projectId=${projectId} \
+      --set mongoDbUri=${process.env.MONGODB_URI}
       -f ${deployDir}/staging.yaml   --timeout 35m`,
     {
       cwd: `/app`,
     }
   );
-
-  // await execCommand(`
-  //   helm upgrade --install apps-${config.environment}-${appName} ${deployDir} \
-  //     --namespace ${config.namespace} --create-namespace \
-  //     --set imagesVersion=${imageTag} \
-  //     -f ${deployDir}/${config.environment}.yaml \
-  //     --timeout 35m \
-  // `);
 };
 
 const deploy = async () => {
@@ -89,7 +82,7 @@ const deploy = async () => {
     );
   } catch (err) {}
 
-  push api image to registry
+  // push api image to registry
   await buildAndPushImage({
     ...deployConfig,
     imageTag: `${deployConfig.dockerRepo}:${imageTag}`,

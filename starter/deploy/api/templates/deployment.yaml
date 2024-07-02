@@ -21,6 +21,9 @@ spec:
           env:
             - name: PROJECT_ID
               value: {{ .Values.projectId }}
+          env:
+            - name: MONGODB_URI
+              value: {{ .Values.mongoDbUri }}
           imagePullPolicy: Always
           livenessProbe:
             httpGet:
