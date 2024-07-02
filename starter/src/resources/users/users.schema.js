@@ -1,14 +1,20 @@
 const Joi = require("joi");
 
 const users = Joi.object({
-  username: Joi.string().required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-  bio: Joi.string(),
-  avatarUrl: Joi.string().uri(),
   _id: Joi.string(),
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
+
+  email: Joi.string().email().required(),
+  fullName: Joi.string().required(),
+  username: Joi.string().required(),
+  avatarUrl: Joi.string().uri(),
+
+  password: Joi.string(),
+
+  oauth: Joi.object({
+    google: Joi.object({}),
+  }),
 });
 
 module.exports = users;

@@ -1,7 +1,10 @@
+const path = require("path");
+const fs = require("fs");
+
 const {
   promises: { readdir },
-} = require("fs");
-const path = require("path");
+} = fs;
+
 
 const getDirectories = async (source) => {
   return (await readdir(source, { withFileTypes: true }))
@@ -13,7 +16,11 @@ module.exports = async () => {
   let resourceDirs = await getDirectories(`${__dirname}/../resources`);
 
   if (process.env.HIVE_SRC) {
-    resourceDirs = [...resourceDirs, ...((await getDirectories(`${process.env.HIVE_SRC}/resources`)).map(r => ({ dirName: r.dirName, isHive: true })))]
+    let hiveResourcesDirPath = `${process.env.HIVE_SRC}/resources`;
+   
+    if (fs.existsSync(hiveResourcesDirPath)) {
+      resourceDirs = [...resourceDirs, ...((await getDirectories(hiveResourcesDirPath)).map(r => ({ dirName: r.dirName, isHive: true })))]
+    }
   }
 
   return resourceDirs

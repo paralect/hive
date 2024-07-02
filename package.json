@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "hive": "cli/cli.js"
+    "hive": "cli/hive.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,9 +19,12 @@
     "@socket.io/redis-emitter": "4.1.1",
     "app-module-path": "2.2.0",
     "aws-sdk": "2.1080.0",
+    "axios": "^1.7.2",
     "bcryptjs": "2.4.3",
+    "commander": "^12.1.0",
     "dotenv": "16.0.0",
     "eslint-config-prettier": "8.5.0",
+    "fs-extra": "^11.2.0",
     "handlebars": "4.7.7",
     "joi": "17.6.0",
     "koa": "2.13.4",

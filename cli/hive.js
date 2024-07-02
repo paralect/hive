@@ -27,21 +27,36 @@ async function downloadFile(fileUrl, filePath) {
   });
 }
 
-async function downloadDirectory(owner, repo, dirPath, destDir) {
-  const tree = await fetchDirectoryTree(owner, repo, dirPath);
+async function downloadDirectory(pluginName, baseDir = '') {
+  const owner = 'paralect';
+  const repo = 'hive-plugins';
+
+  const destDir = path.join(process.cwd(), baseDir);
+
+  const tree = await fetchDirectoryTree(owner, repo, pluginName);
   for (const item of tree) {
-    const filePath = path.join(destDir, path.relative(dirPath, item.path));
+    const relativePath = path.relative(pluginName, item.path);
+    const filePath = path.join(destDir, relativePath);
     if (item.type === 'file') {
       console.log(`Downloading ${item.path}...`);
       await downloadFile(item.download_url, filePath);
     } else if (item.type === 'dir') {
-      await downloadDirectory(owner, repo, item.path, destDir);
+      await downloadDirectory(item.path, path.join(baseDir, relativePath));
     }
   }
 }
 
-const owner = 'paralect';
-const repo = 'hive-plugins';
+program
+  .command('run [dirPath]')
+  .description('Run Hive server')
+  .action(async (dirPath = '.') => {
+    try {
+      process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
+      require('./../starter/src/app.js');
+    } catch (error) {
+      console.error('An error occurred:', error.message);
+    }
+  });
 
 program
   .command('install <plugin>')
@@ -49,8 +64,8 @@ program
   .action(async (plugin) => {
     try {
       const destDir = process.cwd();
-      await downloadDirectory(owner, repo, directory, destDir);
-      console.log('Initialization complete!');
+      
+      await downloadDirectory(plugin);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
