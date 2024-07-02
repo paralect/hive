@@ -74,7 +74,7 @@ const defineRoutes = async (app) => {
   app.use(tryToAttachUser);
 
   const resources = await getResources();
-
+  console.log('resources', resources)
   _.each(resources, async ({ name: resourceName }) => {
     const resourceRouter = new Router();
     const globalRouter = new Router();

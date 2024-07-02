@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const path = require("path");
 const fs = require("fs");
 
@@ -19,7 +20,7 @@ module.exports = async () => {
     let hiveResourcesDirPath = `${process.env.HIVE_SRC}/resources`;
    
     if (fs.existsSync(hiveResourcesDirPath)) {
-      resourceDirs = [...resourceDirs, ...((await getDirectories(hiveResourcesDirPath)).map(r => ({ dirName: r.dirName, isHive: true })))]
+      resourceDirs = _.uniqBy([...resourceDirs, ...((await getDirectories(hiveResourcesDirPath)).map(r => ({ dirName: r.dirName, isHive: true })))], r => r.dirName);
     }
   }
 
