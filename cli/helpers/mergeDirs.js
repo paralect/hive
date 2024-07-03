@@ -4,6 +4,11 @@ const path = require('path');
 
 function shouldIgnore(filePath) {
   const ignoredDirs = ['node_modules', 'dist', '.git'];
+  
+  if (filePath.includes('node_modules/@paralect/hive')) {
+    return false;
+  }
+
   return ignoredDirs.some(dir => filePath.includes(path.sep + dir + path.sep));
 }
 
@@ -57,6 +62,7 @@ async function copyRootFiles(sourceDir, destDir) {
 
 async function mergeDirectories(sourceDir1, sourceDir2, targetDir) {
   // First, copy all contents from sourceDir1 to targetDir
+  console.log('sourceDir1', sourceDir1);
   await copyDir(sourceDir1, targetDir);
 
   // Then, copy and extend/overwrite with contents from sourceDir2

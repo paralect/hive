@@ -40,7 +40,7 @@ module.exports = async () => {
           },
 
           dependencies: {
-            "@paralect/hive": "^0.0.9"
+            "@paralect/hive": "^0.0.11"
           },
           devDependencies: {
             "nodemon": "^3.1.4"
@@ -51,6 +51,7 @@ module.exports = async () => {
       const project = (await axios({ url: `projects`, method: 'post', data: { name: projectName } })).data;
 
       fs.writeFileSync(projectConfigPath, `module.exports = { projectId: '${project._id}' } `);
+      fs.writeFileSync(path.resolve(process.env.HIVE_SRC, './.gitignore'), 'node_modules');
 
       const projectEnvPath = path.resolve(process.env.HIVE_SRC, './app-config/.env');
 
