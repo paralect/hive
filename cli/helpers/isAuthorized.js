@@ -30,7 +30,9 @@ module.exports = async () => {
         
         Important: to save access add HIVE_TOKEN to your env variables and your ~/.zshrc file
 
-        export HIVE_TOKEN=${token}`);
+        export HIVE_TOKEN=${token}
+
+`);
 
       return { token, user }; 
     } catch (error) {
