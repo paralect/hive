@@ -1,50 +1,13 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
-const axios = require('axios');
-const fs = require('fs-extra');
+
 const path = require('path');
-
-const GITHUB_API_URL = 'https://api.github.com/repos';
-
-async function fetchDirectoryTree(owner, repo, dirPath) {
-  const url = `${GITHUB_API_URL}/${owner}/${repo}/contents/${dirPath}`;
-  const response = await axios.get(url);
-  return response.data;
-}
-
-async function downloadFile(fileUrl, filePath) {
-  const response = await axios({
-    url: fileUrl,
-    method: 'GET',
-    responseType: 'stream'
-  });
-  await fs.ensureDir(path.dirname(filePath));
-  response.data.pipe(fs.createWriteStream(filePath));
-  return new Promise((resolve, reject) => {
-    response.data.on('end', resolve);
-    response.data.on('error', reject);
-  });
-}
-
-async function downloadDirectory(pluginName, baseDir = '') {
-  const owner = 'paralect';
-  const repo = 'hive-plugins';
-
-  const destDir = path.join(process.cwd(), baseDir);
-
-  const tree = await fetchDirectoryTree(owner, repo, pluginName);
-  for (const item of tree) {
-    const relativePath = path.relative(pluginName, item.path);
-    const filePath = path.join(destDir, relativePath);
-    if (item.type === 'file') {
-      console.log(`Downloading ${item.path}...`);
-      await downloadFile(item.download_url, filePath);
-    } else if (item.type === 'dir') {
-      await downloadDirectory(item.path, path.join(baseDir, relativePath));
-    }
-  }
-}
+const inquirer = require('inquirer');
+const mergeDirs = require('./helpers/mergeDirs');
+const execCommand = require('./helpers/execCommand');
+const downloadDirectory = require('./helpers/downloadDirectory');
+const axios = require('axios');
 
 program
   .command('run [dirPath]')
@@ -58,6 +21,25 @@ program
     }
   });
 
+  program
+  .command('deploy')
+  .description('Build hive project')
+  .action(async () => {
+    try {
+      let outDir = path.resolve(process.cwd(), './dist');
+      await mergeDirs({ hiveSrc: path.resolve(process.cwd()), outDir });
+
+      console.log('outDir',  path.resolve(outDir, `./deploy/script`))
+      await execCommand(`npm install --prefix ${path.resolve(outDir, `./deploy/script`)}`);
+
+      await execCommand('node ./index.js', {
+        cwd: path.resolve(outDir, `./deploy/script/src`)
+      });
+    } catch (error) {
+      console.error('An error occurred:', error.message);
+    }
+  });
+
 program
   .command('install <plugin>')
   .description('Installs Hive plugin')
@@ -66,6 +48,53 @@ program
       const destDir = process.cwd();
       
       await downloadDirectory(plugin);
+    } catch (error) {
+      console.error('An error occurred:', error.message);
+    }
+  });
+
+
+program
+  .command('login')
+  .description('Login into Hive Cloud')
+  .action(async () => {
+    if (process.env.HIVE_TOKEN) {
+      const user = (await axios({ url: `https://hive-api-test.paralect.co/users/me`, method: 'get', headers: {
+        'Authorization': `Bearer ${process.env.HIVE_TOKEN}`
+      } })).data;
+
+      console.log(`Already logged in!`, user);
+      
+      return;
+    }
+
+    const { email } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'email',
+        message: 'Please enter your email:'
+      }
+    ]);
+
+    try {
+      await axios({ url: `https://hive-api-test.paralect.co/auth/login-code`, method: 'post', data: { email } });
+      
+      const { code } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'code',
+          message: `One time code (sent to ${email})`,
+        }
+      ]);
+
+      const { token, user } = (await axios({ url: `https://hive-api-test.paralect.co/auth/verify-login`, method: 'post', data: { email, code } })).data;
+
+      console.log(`
+        You're now logged into Hive! Welcome 🐝
+        
+        Important: to save access add HIVE_TOKEN to your env variables and your ~/.zshrc file
+
+        export HIVE_TOKEN=${token}`)
     } catch (error) {
       console.error('An error occurred:', error.message);
     }

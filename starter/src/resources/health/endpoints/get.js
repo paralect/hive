@@ -1,5 +1,5 @@
 const { render } = require('@react-email/render');
-const { MyEmailComponent } = require('emails/dist/MyEmailComponent'); 
+const { MyEmailComponent } = require('emails/compiled/MyEmailComponent'); 
 const React = require('react');
 
 const handler = (ctx) => {

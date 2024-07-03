@@ -3,15 +3,15 @@ const slug = require('slug');
 
 const userService = require('db').services.users;
 
-const formatUsername = ({ username, fullName }) => {
+const formatUsername = ({ username, fullName, email }) => {
   return (
     username ||
-    slug(`${fullName.split(' ')[0]} ${fullName.split(' ')[1] || ''}`, '.')
+    fullName ? slug(`${fullName.split(' ')[0]} ${fullName.split(' ')[1] || ''}`, '.') : email?.split('@')[0]
   );
 };
 
 const createUserAccount = async (userData) => {
-  let username = formatUsername({ fullName: userData.fullName });
+  let username = formatUsername({ fullName: userData.fullName, email: userData.email });
 
   if (await userService.exists({ username })) {
     username += _.random(1000, 9999);
@@ -49,9 +49,9 @@ const ensureUserCreated = async (userData) => {
         }
       );
 
-     return { user: changedUser, isNew: true };
+     return { user: changedUser, isNew: false };
     } else {
-      throw new Error(`User with email ${userData.email} already exists`);
+      return { user, isNew: false };
     }
   }
 
@@ -62,6 +62,6 @@ const ensureUserCreated = async (userData) => {
 };
 
 module.exports = async (userData) => {
-  const { updatedUser, isNew } = await ensureUserCreated(userData);
-  return updatedUser;
+  const { user, isNew } = await ensureUserCreated(userData);
+  return user;
 };

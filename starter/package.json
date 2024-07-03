@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build-assets": "mjml ./src/assets/emails/*.mjml -o ./src/assets/emails/dist/",
-    "build-emails": "babel src/emails --out-dir src/emails/dist",
+    "build-emails": "babel src/emails --out-dir src/emails/compiled",
     "dev": "nodemon --watch src src/app.js",
     "init-project": "./bin/init-project.sh",
     "start": "node src/app.js",
