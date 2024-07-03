@@ -46,7 +46,7 @@ const pushToKubernetes = async ({ imageTag, appName, deployConfig }) => {
       --set env\[0\].value='${process.env.MONGODB_URI}' \
       -f ${deployDir}/staging.yaml   --timeout 35m`,
     {
-      cwd: `/app`,
+      // cwd: `/app`,
     }
   );
 };
