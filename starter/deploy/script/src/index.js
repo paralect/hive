@@ -31,7 +31,7 @@ const pushToKubernetes = async ({ imageTag, appName, deployConfig }) => {
     fs.writeFileSync(`${config.home}/.kube/config`, config.kubeConfig);
   }
 
-  let projectId = process.env.PROJECT_ID || 'test';
+  let projectId = process.env.PROJECT_ID || 'core';
   let attachedDomains;
 
   await execCommand(
