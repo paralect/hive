@@ -24,6 +24,7 @@ module.exports = async () => {
 
       const { token, user } = (await axios({ url: `https://hive-api-test.paralect.co/auth/verify-login`, method: 'post', data: { email, code } })).data;
 
+      process.env.HIVE_TOKEN = token;
       console.log(`
         You're now logged into Hive! Welcome 🐝
         

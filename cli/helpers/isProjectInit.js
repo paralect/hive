@@ -39,7 +39,7 @@ module.exports = async () => {
           },
 
           dependencies: {
-            "@paralect/hive": "^0.0.4"
+            "@paralect/hive": "^0.0.6"
           },
           devDependencies: {
             "nodemon": "^3.1.4"

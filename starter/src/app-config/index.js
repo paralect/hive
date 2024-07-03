@@ -4,6 +4,7 @@ require("dotenv").config({ path: `${__dirname}/.env` });
 require("dotenv").config({ path: `${__dirname}/.env.app` });
 
 if (process.env.HIVE_SRC) {
+  require("dotenv").config({ path: `${process.env.HIVE_SRC}/app-config/.env` });
   require("dotenv").config({ path: `${process.env.HIVE_SRC}/app-config/.env.app` });
 }
 
