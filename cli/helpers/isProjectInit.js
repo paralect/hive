@@ -61,7 +61,11 @@ module.exports = async () => {
         fs.writeFileSync(projectEnvPath, Object.keys(project.envs.staging).map(key => `${key}=${project.envs.staging[key]}`).join('\n'));
       }
 
-      console.log(`Successfully initialised project ${projectName}!`);
+      console.log(`Successfully initialised project ${projectName}!
+To launch the dev server run:
+npm install
+npm run dev
+        `);
 
       process.env.PROJECT_ID = project._id;
     }
