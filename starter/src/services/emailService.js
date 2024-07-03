@@ -8,7 +8,7 @@ module.exports = {
     const transporter = nodemailer.createTransport(config.smtp)
 
     return await transporter.sendMail({
-      from: process.env.SMTP_USER,
+      from: config.smtp.fromEmail,
       to, subject, html
     })
   }

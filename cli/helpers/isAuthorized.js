@@ -12,7 +12,7 @@ module.exports = async () => {
     ]);
 
     try {
-      await axios({ url: `https://hive-api-test.paralect.co/auth/login-code`, method: 'post', data: { email } });
+      await axios({ url: `https://hive-api-core.paralect.co/auth/login-code`, method: 'post', data: { email } });
       
       const { code } = await inquirer.prompt([
         {
@@ -22,7 +22,7 @@ module.exports = async () => {
         }
       ]);
 
-      const { token, user } = (await axios({ url: `https://hive-api-test.paralect.co/auth/verify-login`, method: 'post', data: { email, code } })).data;
+      const { token, user } = (await axios({ url: `https://hive-api-core.paralect.co/auth/verify-login`, method: 'post', data: { email, code } })).data;
 
       process.env.HIVE_TOKEN = token;
       console.log(`

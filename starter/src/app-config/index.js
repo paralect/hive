@@ -35,9 +35,10 @@ const config = {
   },
 
   smtp: {
+    fromEmail: process.env.SMTP_FROM_EMAIL,
     host: process.env.SMTP_SERVER,
     port: process.env.SMTP_PORT,
-    secure: true,
+    secure: false,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_KEY,
