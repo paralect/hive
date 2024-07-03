@@ -51,11 +51,11 @@ module.exports = async () => {
 
       fs.writeFileSync(projectConfigPath, `module.exports = { projectId: '${project._id}' } `);
 
-      const projectEnvPath = path.resolve(process.env.HIVE_SRC, './config/.env');
+      const projectEnvPath = path.resolve(process.env.HIVE_SRC, './app-config/.env');
       
       if (project?.envs?.staging) {
-        if (!fs.existsSync(path.resolve(process.env.HIVE_SRC, './config'))) {
-          fs.mkdirSync(path.resolve(process.env.HIVE_SRC, './config'));
+        if (!fs.existsSync(path.resolve(process.env.HIVE_SRC, './app-config'))) {
+          fs.mkdirSync(path.resolve(process.env.HIVE_SRC, './app-config'));
         }
 
         fs.writeFileSync(projectEnvPath, Object.keys(project.envs.staging).map(key => `${key}=${project.envs.staging[key]}`).join('\n'));
