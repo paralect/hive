@@ -1,4 +1,4 @@
-FROM node:16.13.1-alpine3.13 as base
+FROM --platform=linux/amd64 node:16.13.1-alpine3.13 as base
 RUN apk add --no-cache python3 py3-pip
 
 ENV NODE_ENV=production
