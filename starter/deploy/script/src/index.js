@@ -90,12 +90,14 @@ const deploy = async () => {
     environment: config.environment,
   });
 
-  // deploy api to kubernetes and deploy migrator through helm hooks
-  await pushToKubernetes({
-    imageTag,
-    appName: "api",
-    deployConfig,
-  });
+  if (!process.env.SKIP_KUBERNETES) {
+    // deploy api to kubernetes and deploy migrator through helm hooks
+    await pushToKubernetes({
+      imageTag,
+      appName: "api",
+      deployConfig,
+    });
+  }
 };
 
 deploy();

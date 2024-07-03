@@ -64,8 +64,8 @@ program
   });
 
   program
-  .command('deploy-local')
-  .description('Build and deploy Hive project from local machine docker + helm')
+  .command('build-local')
+  .description('Build Hive project from local machine with docker')
   .action(async () => {
     try {
       let outDir = path.resolve(process.cwd(), './dist');
@@ -74,6 +74,7 @@ program
       console.log('outDir',  path.resolve(outDir, `./deploy/script`))
       await execCommand(`npm install --prefix ${path.resolve(outDir, `./deploy/script`)}`);
 
+      process.env.SKIP_KUBERNETES = true;
       await execCommand('node ./index.js', {
         cwd: path.resolve(outDir, `./deploy/script/src`)
       });

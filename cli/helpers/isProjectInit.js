@@ -36,10 +36,11 @@ module.exports = async () => {
 
           scripts: {
             "dev": "nodemon --watch . --exec hive run .",
+            "deploy-local": "hive build-local && hive deploy",
           },
 
           dependencies: {
-            "@paralect/hive": "^0.0.7"
+            "@paralect/hive": "^0.0.9"
           },
           devDependencies: {
             "nodemon": "^3.1.4"
