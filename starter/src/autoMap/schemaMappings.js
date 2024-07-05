@@ -1,7 +1,7 @@
-module.exports = {
-  // contacts: {
-  //   master: {
-  //     schema: 'users',
-  //   },
-  // },
+export default {
+// contacts: {
+//   master: {
+//     schema: 'users',
+//   },
+// },
 };

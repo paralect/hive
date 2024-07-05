@@ -1,3 +1,3 @@
-module.exports = {
-  // myVar: process.env.MY_VAR
+export default {
+// myVar: process.env.MY_VAR
 };

@@ -1,9 +1,8 @@
-const Joi = require("joi");
-
+import Joi from "joi";
 const schema = Joi.object({
-  _id: Joi.string(),
-  createdOn: Joi.date(),
-  updatedOn: Joi.date(),
-  version: Joi.number().required(),
+    _id: Joi.string(),
+    createdOn: Joi.date(),
+    updatedOn: Joi.date(),
+    version: Joi.number().required(),
 });
-module.exports = schema;
+export default schema;
