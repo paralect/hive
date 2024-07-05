@@ -74,7 +74,7 @@ program
       console.log('outDir',  path.resolve(outDir, `./deploy/script`))
       await execCommand(`npm install --prefix ${path.resolve(outDir, `./deploy/script`)}`);
 
-      process.env.SKIP_KUBERNETES = true;
+      // process.env.SKIP_KUBERNETES = true;
       await execCommand('node ./index.js', {
         cwd: path.resolve(outDir, `./deploy/script/src`)
       });
