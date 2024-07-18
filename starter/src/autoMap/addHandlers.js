@@ -1,9 +1,19 @@
+const fs = require("fs");
+const path = require("path");
 const _ = require("lodash");
 const db = require("db");
 
 const ifUpdated = require("helpers/db/ifUpdated");
 
-const schemaMappings = require("./schemaMappings");
+let schemaMappings = {};
+
+if (process.env.HIVE_SRC) {
+  let schemaMappingsPath = path.resolve(process.env.HIVE_SRC, "./autoMap/schemaMappings.js");
+  
+  if (fs.existsSync(schemaMappingsPath)) {
+    schemaMappings = require(schemaMappingsPath);
+  }
+}
 
 const getDependentFields = (schema, dependentFieldName) => {
   let targetSchema = schema[dependentFieldName];
