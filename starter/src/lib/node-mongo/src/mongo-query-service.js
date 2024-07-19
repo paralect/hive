@@ -51,14 +51,14 @@ class MongoQueryService {
   async findOne(query = {}, options = {}) {
     const { results } = await this.find(query, { limit: 2, ...options });
 
-    if (results.length > 1) {
-      throw new MongoServiceError(
-        MongoServiceError.MORE_THAN_ONE,
-        `findOne: More than one document return for query ${JSON.stringify(
-          query
-        )}`
-      );
-    }
+    // if (results.length > 1) {
+    //   throw new MongoServiceError(
+    //     MongoServiceError.MORE_THAN_ONE,
+    //     `findOne: More than one document return for query ${JSON.stringify(
+    //       query
+    //     )}`
+    //   );
+    // }
 
     return results[0] || null;
   }
