@@ -6,6 +6,9 @@ const getSchemas = require("helpers/getSchemas");
 const getResources = require("helpers/getResources");
 
 const config = require("app-config");
+
+const bullMqBus = require("./bullMqBus");
+
 const db = require("lib/node-mongo").connect(config.mongoUri);
 
 db.services = {};
@@ -34,6 +37,7 @@ db.init = async () => {
 
       db.services[schemaName] = db.createService(`${resourceName}`, {
         validate: (obj) => schema.validate(obj, { allowUnknown: true }),
+        emitter: bullMqBus
       });
     }
   );

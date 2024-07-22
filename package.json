@@ -23,6 +23,7 @@
     "aws-sdk": "2.1080.0",
     "axios": "^1.7.2",
     "bcryptjs": "2.4.3",
+    "bullmq": "^5.10.3",
     "commander": "^12.1.0",
     "dotenv": "16.0.0",
     "eslint-config-prettier": "8.5.0",

@@ -18,7 +18,7 @@ const connect = (connectionString, settings) => {
   });
 
   db.on("open", () => {
-    logger.info(`Connected to mongodb: ${connectionString}`);
+    logger.info(`Connected to mongodb`);
   });
 
   db.on("close", (err) => {
@@ -33,7 +33,7 @@ const connect = (connectionString, settings) => {
     if (err) {
       logger.error(err);
     } else {
-      logger.info(`Connected to mongodb: ${connectionString}`);
+      logger.info(`Connected to mongodb`);
     }
   });
 

@@ -18,7 +18,6 @@ const defaultOptions = {
 class MongoService extends MongoQueryService {
   constructor(collection, options = {}) {
     super(collection, options);
-
     _.defaults(this._options, defaultOptions);
 
     this._bus = this._options.emitter || new EventEmitter();
@@ -102,25 +101,34 @@ class MongoService extends MongoQueryService {
   }
 
   emit(eventName, event) {
-    return this._bus.emit(eventName, event);
+    return this._bus.emit(`${this._collection.name}:${eventName}`, event);
   }
 
   once(eventName, handler) {
-    return this._bus.once(eventName, handler);
+    return this._bus.once(`${this._collection.name}:${eventName}`, handler);
   }
 
   on(eventName, handler) {
-    return this._bus.on(eventName, handler);
+    console.log("this._bus.on(`${this._collection.name}:${eventName}`, handler);", `${this._collection.name}:${eventName}`);
+    return this._bus.on(`${this._collection.name}:${eventName}`, handler);
   }
 
-  onPropertiesUpdated(properties, handler) {
-    return this.on("updated", (event) => {
-      const isChanged = MongoService._deepCompare(
-        event.doc,
-        event.prevDoc,
-        properties
-      );
-      if (isChanged) handler(event);
+  onPropertiesUpdated(fieldNames, handler) {
+    return this.on(`${this._collection.name}:${eventName}`, (event) => {
+      const { doc, prevDoc } = event;
+
+      let isFieldChanged = false;
+
+      _.forEach(fieldNames, (fieldName) => {
+        if (!_.isEqual(doc[fieldName], prevDoc[fieldName])) {
+          isFieldChanged = true;
+          return false; // break loop
+        }
+
+        return true;
+      });
+
+      if (isFieldChanged) handler(event);
     });
   }
 
@@ -147,7 +155,7 @@ class MongoService extends MongoQueryService {
     await this._collection.insert(created, options);
 
     created.forEach((doc) => {
-      this._bus.emit("created", {
+      this._bus.emit(`${this._collection.name}:created`, {
         doc,
       });
     });
@@ -186,7 +194,7 @@ class MongoService extends MongoQueryService {
       options
     );
 
-    this._bus.emit("updated", {
+    this._bus.emit(`${this._collection.name}:updated`, {
       doc: updated,
       prevDoc: doc,
     });
@@ -247,7 +255,7 @@ class MongoService extends MongoQueryService {
     await this._collection.remove(query, options);
 
     removed.results.forEach((doc) => {
-      this._bus.emit("removed", {
+      this._bus.emit(`${this._collection.name}:removed`, {
         doc,
       });
     });
