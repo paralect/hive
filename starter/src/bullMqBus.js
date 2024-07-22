@@ -1,9 +1,8 @@
+const config = require('app-config');
 const bullMq = require('./bullMq');
-const queue = bullMq.Queue('database');
+const queue = bullMq.Queue(`database-${config.env}`);
 
 let handlers = {};
-
-console.log('CREATE bullMqBus');
 
 module.exports = {
   on(eventName, handler) {
@@ -17,6 +16,6 @@ module.exports = {
   }
 }
 
-bullMq.Worker('database', async ({ name: eventName, data }) => {
+bullMq.Worker(`database-${config.env}`, async ({ name: eventName, data }) => {
   await Promise.all((handlers[eventName] || []).map(h => h(data)));
 });
