@@ -53,7 +53,7 @@ const main = async () => {
 
   await socketIo(server);
 
-  require("scheduler");
+  require("./scheduler");
 };
 
 main();
