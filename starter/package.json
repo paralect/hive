@@ -6,7 +6,6 @@
   "main": "src/app.js",
   "author": "Paralect",
   "license": "MIT",
-  "type": "module",
   "keywords": [
     "koa",
     "rest api",
@@ -19,7 +18,7 @@
   "scripts": {
     "build-assets": "mjml ./src/assets/emails/*.mjml -o ./src/assets/emails/dist/",
     "build-emails": "babel src/emails --out-dir src/emails/compiled",
-    "dev": "nodemon --watch src src/app.js",
+    "dev": "tsx --watch src/app.js",
     "init-project": "./bin/init-project.sh",
     "start": "node src/app.js",
     "migrate": "node ./src/migrator.js",
@@ -54,13 +53,11 @@
     "lodash": "4.17.21",
     "mjml": "4.12.0",
     "mkdirp": "1.0.4",
-    "module-alias": "^2.2.3",
     "moment": "2.29.1",
     "moment-duration-format": "2.3.2",
     "multer": "1.4.4",
     "node-schedule": "2.1.0",
     "nodemailer": "^6.9.14",
-    "nodemon": "2.0.15",
     "prettier": "2.6.2",
     "psl": "1.8.0",
     "redis": "3.1.2",
@@ -76,11 +73,14 @@
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
+    "@types/node": "^20.14.11",
     "eslint": "8.9.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.25.4",
     "husky": "7.0.4",
-    "lint-staged": "12.3.4"
+    "lint-staged": "12.3.4",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
   },
   "lint-staged": {
     "*.js": [
