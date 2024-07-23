@@ -1,5 +1,12 @@
-const React = require('react');
-const { Html, Head, Body, Container, Heading, Text } = require('@react-email/components');
+const React = require("react");
+const {
+  Html,
+  Head,
+  Body,
+  Container,
+  Heading,
+  Text,
+} = require("@react-email/components");
 
 const MyEmailComponent = ({ name }) => (
   <Html>

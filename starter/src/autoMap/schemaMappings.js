@@ -1,7 +1,7 @@
 export default {
-// contacts: {
-//   master: {
-//     schema: 'users',
-//   },
-// },
+  // contacts: {
+  //   master: {
+  //     schema: 'users',
+  //   },
+  // },
 };

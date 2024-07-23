@@ -1,3 +1,3 @@
 export default {
-// myVar: process.env.MY_VAR
+  // myVar: process.env.MY_VAR
 };
