@@ -5,6 +5,9 @@ const { createAdapter } = require("@socket.io/redis-adapter");
 const config = require("app-config");
 const logger = require("logger");
 
+const userService = require('db').services.users;
+const tokenServices = require('db').services.tokens;
+
 module.exports = (server) => {
   const io = new Server(server);
 
@@ -28,17 +31,23 @@ module.exports = (server) => {
   const getUserData = async (socket) => {
     const accessToken = getCookie(
       socket.handshake.headers.cookie,
-      "ship_access_token"
-    );
+      "access_token"
+    ) || '';
+
+    console.log('socket: cookie access token', accessToken[0], accessToken[1], accessToken[2]);
+
+    let tokenDoc = null;
 
     if (!accessToken) {
       logger.info(
         "Note: socket io anonymous auth. Add user authentication in socketIoService"
       );
+    } else {
+      tokenDoc = await tokenServices.findOne({ token: accessToken });
     }
 
     return {
-      _id: "anonymous",
+      _id: tokenDoc?.user?._id || "anonymous",
     };
   };
 
