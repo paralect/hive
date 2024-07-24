@@ -6,7 +6,7 @@ const users = Joi.object({
   updatedOn: Joi.date(),
 
   email: Joi.string().email().required(),
-  username: Joi.string().required(),
+  username: Joi.string(),
   fullName: Joi.string(),
   avatarUrl: Joi.string().uri(),
 
