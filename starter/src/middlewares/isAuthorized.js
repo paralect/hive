@@ -24,6 +24,10 @@ module.exports = async (ctx, next) => {
 
   if (token) {
     ctx.state.user = await userService.findOne({ _id: token.user._id });
+
+    if (token.metadata) {
+      ctx.state.user.authMetadata = token.metadata;
+    }
   }
 
   if (ctx.state.user) {

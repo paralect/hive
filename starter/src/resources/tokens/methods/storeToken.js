@@ -12,7 +12,7 @@ const generateSecureToken = async (tokenLength = 32) => {
   return buf.toString('hex');
 };
 
-module.exports = async (ctx, { userId }) => {
+module.exports = async (ctx, { userId, metadata = null }) => {
   const token = await generateSecureToken();
   const otp = await generateSecureToken();
 
@@ -22,6 +22,7 @@ module.exports = async (ctx, { userId }) => {
       _id: userId,
     },
     otp,
+    ...(metadata ? { metadata } : {})
   });
 
   setCookie(ctx, { name: 'access_token', value: token });

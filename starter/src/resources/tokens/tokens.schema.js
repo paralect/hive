@@ -9,4 +9,5 @@ module.exports = Joi.object({
   }).required(),
   token: Joi.string().required(),
   otp: Joi.string().allow(null).allow(''),
+  metadata: Joi.object({}).optional()
 });
