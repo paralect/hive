@@ -13,7 +13,7 @@ const routeErrorHandler = async (ctx, next) => {
 
     logger.error(errors);
 
-    if (serverError && process.env.APP_ENV === "production") {
+    if (serverError && (error.status === 500 || !error.status) && process.env.APP_ENV === "production") {
       serverError.global = "Something went wrong";
     }
 
