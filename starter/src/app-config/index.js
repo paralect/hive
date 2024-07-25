@@ -23,6 +23,8 @@ if (process.env.HIVE_SRC) {
 const env = process.env.APP_ENV || "development";
 
 const config = {
+  _hive: {
+  },
   env,
   port: process.env.PORT || 3001,
   domain: env === 'production' ? 'https://api.yourapp.com': process.env.DOMAIN || '',

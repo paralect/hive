@@ -1,3 +1,4 @@
+const config = require('app-config');
 const userService = require('db').services.users;
 const tokenService = require('db').services.tokens;
 
@@ -5,9 +6,13 @@ const storeTokenToState = async (ctx) => {
   let accessToken = ctx.cookies.get('access_token');
 
   const { authorization } = ctx.headers;
-
+  
   if (!accessToken && authorization) {
     accessToken = authorization.replace('Bearer', '').trim();
+  }
+
+  if (!accessToken && config._hive.authHeaderName && ctx.headers[config._hive.authHeaderName]) {
+    accessToken = ctx.headers[config._hive.authHeaderName];
   }
 
   ctx.state.accessToken = accessToken;
