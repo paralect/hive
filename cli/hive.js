@@ -15,7 +15,8 @@ program
   .action(async (dirPath = '.') => {
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
-      require('./../starter/src/app.js');
+      execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
+      // require('./../starter/src/app.js');
     } catch (error) {
       console.error('An error occurred:', error.message);
     }

@@ -4,6 +4,8 @@ import appConfig$0 from "./app.js";
 let appConfig = appConfig$0;
 dotenv.config({ path: `${__dirname}/.env` });
 dotenv.config({ path: `${__dirname}/.env.app` });
+
+console.log('process.env.HIVE_SRC', process.env.HIVE_SRC)
 if (process.env.HIVE_SRC) {
   dotenv.config({
     path: `${process.env.HIVE_SRC}/app-config/.env.app`,
@@ -11,8 +13,9 @@ if (process.env.HIVE_SRC) {
 }
 if (process.env.HIVE_SRC) {
   let pluginConfigPath = `${process.env.HIVE_SRC}/app-config/app.js`;
+  // pluginConfig = (await import(pluginConfigPath)).default;
   if (fs.existsSync(pluginConfigPath)) {
-    appConfig = { ...appConfig, ...pluginConfig };
+    appConfig = { ...appConfig };
   }
 }
 const env = process.env.APP_ENV || "development";

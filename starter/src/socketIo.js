@@ -1,10 +1,9 @@
 import socket from "socket.io";
-import redis from "redis";
+import { createClient } from "redis";
 import redisAdapter from "@socket.io/redis-adapter";
 import config from "app-config";
 import logger from "logger";
 const { Server } = socket;
-const { createClient } = redis;
 const { createAdapter } = redisAdapter;
 export default (server) => {
   const io = new Server(server);

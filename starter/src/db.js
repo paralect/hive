@@ -5,6 +5,8 @@ import getSchemas from "helpers/getSchemas";
 import getResources from "helpers/getResources";
 import config from "app-config";
 import { connect } from "lib/node-mongo";
+
+
 const db = connect(config.mongoUri);
 db.services = {};
 db.schemas = {};
@@ -34,9 +36,7 @@ db.init = async () => {
       requireDir(`${dir}/handlers`);
     }
   });
-  const mapSchema = require("autoMap/mapSchema");
-  await mapSchema();
-  const addHandlers = require("autoMap/addHandlers");
-  await addHandlers();
+  (await import("autoMap/addHandlers")).default();
+  (await import("autoMap/mapSchema")).default();
 };
 export default db;

@@ -59,14 +59,17 @@ const defineRoutes = async (app) => {
   _.each(resources, async ({ name: resourceName }) => {
     const resourceRouter = new Router();
     const globalRouter = new Router();
-    const endpoints = (await getResourceEndpoints(resourceName))
-      .map(({ file: endpointFile, name }) => {
-        endpoint.name = name;
+    const endpoints = await Promise.all((await getResourceEndpoints(resourceName))
+      .map(async ({ file: endpointFile, name }) => {
+        let endpointDef = (await import(endpointFile));
+        
+        endpointDef.endpoint.name = name;
+
         return {
-          endpoint,
-          requestSchema,
-          middlewares,
-          handler,
+          endpoint: endpointDef.endpoint,
+          requestSchema: endpointDef.requestSchema,
+          middlewares: endpointDef.middlewares,
+          handler: endpointDef.handler,
         };
       })
       .sort((e) => {
@@ -76,8 +79,8 @@ const defineRoutes = async (app) => {
           return 1;
         }
         return -1;
-      });
-    endpoints.forEach(({ endpoint, requestSchema, middlewares, handler }) => {
+      }));
+    endpoints.forEach(({ endpoint, requestSchema, middlewares = [], handler }) => {
       const additionalMiddlewares = [];
       if (requestSchema) {
         additionalMiddlewares.push(validate(requestSchema));
