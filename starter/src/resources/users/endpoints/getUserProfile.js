@@ -1,17 +1,19 @@
-const Joi = require("joi");
-const userService = require('db').services.users;
+import { z } from 'zod';
+import db from 'db';
 
-module.exports.handler = async (ctx) => {
+const userService = db.services.users;
+
+export const handler = async (ctx) => {
   const { userId } = ctx.params;
   const user = await userService.findOne({ _id: userId });
   ctx.body = user;
 };
 
-module.exports.requestSchema = Joi.object({
-  userId: Joi.string().required(),
+export const requestSchema = z.object({
+  userId: z.string(),
 });
 
-module.exports.endpoint = {
+export const endpoint = {
   method: "GET",
   url: "/profile/:userId",
 };

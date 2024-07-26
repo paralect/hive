@@ -1,7 +1,7 @@
 const React = require('react');
 const { Html, Head, Body, Container, Heading, Text } = require('@react-email/components');
 
-const MyEmailComponent = ({ name }) => (
+export const MyEmailComponent = ({ name }) => (
   <Html>
     <Head />
     <Body>
@@ -12,5 +12,3 @@ const MyEmailComponent = ({ name }) => (
     </Body>
   </Html>
 );
-
-module.exports = { MyEmailComponent };

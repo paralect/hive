@@ -1,4 +1,4 @@
-const logger = require("logger");
+import logger from 'logger';
 
 const routeErrorHandler = async (ctx, next) => {
   try {
@@ -24,4 +24,4 @@ const routeErrorHandler = async (ctx, next) => {
   }
 };
 
-module.exports = routeErrorHandler;
+export default routeErrorHandler;

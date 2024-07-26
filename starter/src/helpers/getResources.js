@@ -1,6 +1,6 @@
-const _ = require("lodash");
-const path = require("path");
-const fs = require("fs");
+import _ from 'lodash';
+import path from 'path';
+import fs from 'fs';
 
 const {
   promises: { readdir },
@@ -13,7 +13,7 @@ const getDirectories = async (source) => {
     .map((dir) => ({ dirName: dir.name }));
 };
 
-module.exports = async () => {
+export default async () => {
   let resourceDirs = await getDirectories(`${__dirname}/../resources`);
 
   if (process.env.HIVE_SRC) {

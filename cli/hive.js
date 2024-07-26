@@ -3,12 +3,11 @@
 const { program } = require('commander');
 
 const path = require('path');
-const isAuthorized = require('./helpers/isAuthorized');
+const inquirer = require('inquirer');
 const mergeDirs = require('./helpers/mergeDirs');
 const execCommand = require('./helpers/execCommand');
 const downloadDirectory = require('./helpers/downloadDirectory');
-const axios = require('./helpers/axiosAuth');
-const isProjectInit = require('./helpers/isProjectInit.js');
+const axios = require('axios');
 
 program
   .command('run [dirPath]')
@@ -16,56 +15,16 @@ program
   .action(async (dirPath = '.') => {
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
-      require('./../starter/src/app.js');
+      execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
+      // require('./../starter/src/app.js');
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
   });
 
   program
-  .command('deploy [imageTag]')
-  .description('Build and deploy Hive project from local machine docker + helm')
-  .action(async (imageTag) => {
-    process.env.HIVE_SRC = path.resolve(process.cwd());
-    
-    if (!imageTag) {
-      const { stdout: branch } = await execCommand(
-        "git rev-parse --abbrev-ref HEAD",
-        { stdio: "pipe" }
-      );
-      const { stdout: commitSHA } = await execCommand("git rev-parse HEAD", {
-        stdio: "pipe",
-      });
-
-      imageTag = `${branch}.${commitSHA}`;
-    }
-
-    console.log("Deploying Image Tag ", imageTag);
-
-    try {
-     await isAuthorized();
-    const { projectId } = await isProjectInit();
-    console.log('project id', projectId)
-     const { isOk } = (
-      await axios({ 
-        // url: `http://localhost:3001/projects/${projectId}/deploy`,
-        url: `projects/${projectId}/deploy`,
-        method: 'post',
-        data: {
-          imageTag
-        }
-      })
-      ).data;
-
-      console.log('Deployed');
-    } catch (error) {
-      console.error('An error occurred:', error.message);
-    }
-  });
-
-  program
-  .command('build-local')
-  .description('Build Hive project from local machine with docker')
+  .command('deploy')
+  .description('Build hive project')
   .action(async () => {
     try {
       let outDir = path.resolve(process.cwd(), './dist');
@@ -74,7 +33,6 @@ program
       console.log('outDir',  path.resolve(outDir, `./deploy/script`))
       await execCommand(`npm install --prefix ${path.resolve(outDir, `./deploy/script`)}`);
 
-      // process.env.SKIP_KUBERNETES = true;
       await execCommand('node ./index.js', {
         cwd: path.resolve(outDir, `./deploy/script/src`)
       });
@@ -96,95 +54,51 @@ program
     }
   });
 
+
 program
   .command('login')
   .description('Login into Hive Cloud')
   .action(async () => {
     if (process.env.HIVE_TOKEN) {
-      const user = (await axios({ url: `users/me`, method: 'get' })).data;
+      const user = (await axios({ url: `https://hive-api-test.paralect.co/users/me`, method: 'get', headers: {
+        'Authorization': `Bearer ${process.env.HIVE_TOKEN}`
+      } })).data;
 
       console.log(`Already logged in!`, user);
       
       return;
     }
-   
-  });
 
-program
-  .command('init')
-  .description('Init Hive Project')
-  .action(async () => {
+    const { email } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'email',
+        message: 'Please enter your email:'
+      }
+    ]);
+
     try {
-      process.env.HIVE_SRC = path.resolve(process.cwd());
-
-      await isAuthorized();
-      await isProjectInit();
-    } catch (error) {
-      console.error('An error occurred:', error.message);
-    }
-  });
-
-program
-  .command('env-get <envName>')
-  .description('Get env variable')
-  .action(async (envName) => {
-    try {
-      process.env.HIVE_SRC = path.resolve(process.cwd());
-
-      await isAuthorized();
-      const { projectId } = await isProjectInit();
-
-      const { value } = (await axios({ 
-        method: 'post',
-        url: `projects/${projectId}/get-env`,
-        data: {
-          name: envName
-        }
-      })).data;
-
-      console.log(`${envName} value is ${value || '<empty>'}`)
-    } catch (error) {
-      console.error('An error occurred:', error.message);
-    }
-  });
-
-  program
-  .command('env-set <envName> <envValue>')
-  .description('Set env variable')
-  .action(async (envName, envValue) => {
-    try {
-      process.env.HIVE_SRC = path.resolve(process.cwd());
-
-      await isAuthorized();
-      const { projectId } = await isProjectInit();
-
-      const { value } = (await axios({ 
-        method: 'post',
-        url: `projects/${projectId}/env`,
-        data: {
-          name: envName,
-          value: envValue,
-        }
-      })).data;
-
-      console.log(`Updated ${envName}`)
-    } catch (error) {
-      console.error('An error occurred:', error.message);
-    }
-  });
-
-
-// program
-//   .command('init [name]')
-//   .description('Installs Hive plugin')
-//   .action(async (plugin) => {
-//     try {
-//       const destDir = process.cwd();
+      await axios({ url: `https://hive-api-test.paralect.co/auth/login-code`, method: 'post', data: { email } });
       
-//       await downloadDirectory(plugin);
-//     } catch (error) {
-//       console.error('An error occurred:', error.message);
-//     }
-//   });
+      const { code } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'code',
+          message: `One time code (sent to ${email})`,
+        }
+      ]);
+
+      const { token, user } = (await axios({ url: `https://hive-api-test.paralect.co/auth/verify-login`, method: 'post', data: { email, code } })).data;
+
+      console.log(`
+        You're now logged into Hive! Welcome 🐝
+        
+        Important: to save access add HIVE_TOKEN to your env variables and your ~/.zshrc file
+
+        export HIVE_TOKEN=${token}`)
+    } catch (error) {
+      console.error('An error occurred:', error.message);
+    }
+  });
 
 program.parse(process.argv);

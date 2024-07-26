@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // contacts: {
   //   master: {
   //     schema: 'users',

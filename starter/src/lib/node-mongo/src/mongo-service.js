@@ -1,9 +1,8 @@
-const monk = require("monk");
-const { EventEmitter } = require("events");
-const _ = require("lodash");
-
-const MongoQueryService = require("./mongo-query-service");
-const MongoServiceError = require("./mongo-service-error");
+import monk from 'monk';
+import { EventEmitter } from 'events';
+import _ from 'lodash';
+import MongoQueryService from './mongo-query-service';
+import MongoServiceError from './mongo-service-error';
 
 const defaultOptions = {
   addCreatedOnField: true,
@@ -109,7 +108,6 @@ class MongoService extends MongoQueryService {
   }
 
   on(eventName, handler) {
-    console.log("this._bus.on(`${this._collection.name}:${eventName}`, handler);", `${this._collection.name}:${eventName}`);
     return this._bus.on(`${this._collection.name}:${eventName}`, handler);
   }
 
@@ -284,4 +282,4 @@ class MongoService extends MongoQueryService {
   }
 }
 
-module.exports = MongoService;
+export default MongoService;

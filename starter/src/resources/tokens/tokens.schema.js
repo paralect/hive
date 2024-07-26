@@ -1,13 +1,13 @@
-const Joi = require('joi');
+import { z } from 'zod';
 
-module.exports = Joi.object({
-  _id: Joi.string(),
-  createdOn: Joi.date(),
-  updatedOn: Joi.date(),
-  user: Joi.object({
-    _id: Joi.string(),
-  }).required(),
-  token: Joi.string().required(),
-  otp: Joi.string().allow(null).allow(''),
-  metadata: Joi.object({}).optional()
+export default z.object({
+  _id: z.string(),
+  createdOn: z.date(),
+  updatedOn: z.date(),
+  user: z.object({
+    _id: z.string(),
+  }),
+  token: z.string(),
+  otp: z.string().nullable().optional(),
+  metadata: z.object({}).optional()
 });

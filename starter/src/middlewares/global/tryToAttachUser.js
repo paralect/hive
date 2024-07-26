@@ -1,5 +1,6 @@
-const userService = require("db").services.users;
-const tokenService = require("db").services.tokens;
+import db from 'db';
+const userService = db.services.users;
+const tokenService = db.services.tokens;
 
 const storeTokenToState = async (ctx) => {
   let accessToken = ctx.cookies.get("access_token");
@@ -29,4 +30,4 @@ const tryToAttachUser = async (ctx, next) => {
   return next();
 };
 
-module.exports = tryToAttachUser;
+export default tryToAttachUser;

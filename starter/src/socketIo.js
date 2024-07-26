@@ -1,14 +1,11 @@
-const { Server } = require("socket.io");
-const { createClient } = require("redis");
-const { createAdapter } = require("@socket.io/redis-adapter");
+import db from 'db';
+import { Server } from 'socket.io';
+import { createClient } from 'redis';
+import { createAdapter } from '@socket.io/redis-adapter';
+import config from 'app-config';
+import logger from 'logger';
 
-const config = require("app-config");
-const logger = require("logger");
-
-const userService = require('db').services.users;
-const tokenServices = require('db').services.tokens;
-
-module.exports = (server) => {
+export default (server) => {
   const io = new Server(server);
 
   const pubClient = createClient({ url: config.redis.url });
@@ -43,7 +40,7 @@ module.exports = (server) => {
         "Note: socket io anonymous auth. Add user authentication in socketIoService"
       );
     } else {
-      tokenDoc = await tokenServices.findOne({ token: accessToken });
+      tokenDoc = await db.services.tokens.findOne({ token: accessToken });
     }
 
     return {

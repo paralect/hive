@@ -1,20 +1,19 @@
-const Joi = require("joi");
+import { z } from 'zod';
 
-const users = Joi.object({
-  _id: Joi.string(),
-  createdOn: Joi.date(),
-  updatedOn: Joi.date(),
+const users = z.object({
+  _id: z.string(),
+  createdOn: z.date(),
+  updatedOn: z.date(),
 
-  email: Joi.string().email().required(),
-  username: Joi.string(),
-  fullName: Joi.string(),
-  avatarUrl: Joi.string().uri(),
+  email: z.string().email(),
+  fullName: z.string(),
+  avatarUrl: z.string().url().optional(),
 
-  password: Joi.string(),
+  password: z.string(),
 
-  oauth: Joi.object({
-    google: Joi.object({}),
-  }),
+  oauth: z.object({
+    google: z.object({}),
+  }).optional(),
 });
 
-module.exports = users;
+export default users;

@@ -1,6 +1,5 @@
-const config = require('app-config');
-
-const { Queue, Worker } = require('bullmq');
+import config from 'app-config';
+import { Queue, Worker } from 'bullMq';
 
 let connectionOpts = {
   host: config.redis.url.split('@')[1].split(':')[0],
@@ -9,7 +8,7 @@ let connectionOpts = {
   password: config.redis.url.split(':')[2].split('@')[0],
 };
 
-module.exports = {
+export default {
   Queue(queueName) {
     return new Queue(queueName, {
       connection: connectionOpts,

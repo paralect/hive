@@ -1,12 +1,12 @@
+import { promises } from "fs";
+import getResources from "./getResources.js";
+
 const {
   promises: { readdir },
-} = require("fs");
-const getResources = require("./getResources");
+} = { promises };
 
-
-module.exports = async () => {
+export default async () => {
   const resources = await getResources();
-
   const schemas = [];
 
   await Promise.all(
@@ -19,10 +19,9 @@ module.exports = async () => {
           resourceName,
           name: f.replace(".schema.js", ""),
         }));
-        
       schemas.push(...resourceSchemas);
     })
   );
-
+  
   return schemas;
 };

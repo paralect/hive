@@ -1,6 +1,6 @@
-const prettier = require("prettier");
+import prettier from 'prettier';
 
-module.exports = (...params) => {
+export default (...params) => {
   return prettier.format(...params, {
     parser: "babel",
     singleQuote: true,

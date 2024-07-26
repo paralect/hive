@@ -1,10 +1,9 @@
-const config = require("app-config");
-
-const { Emitter } = require("@socket.io/redis-emitter");
-const { createClient } = require("redis");
+import config from 'app-config';
+import { Emitter } from '@socket.io/redis-emitter';
+import { createClient } from 'redis';
 
 const redisClient = createClient({ url: config.redis.url });
 
 const emitter = new Emitter(redisClient);
 
-module.exports = emitter;
+export default emitter;

@@ -1,5 +1,5 @@
-const winston = require("winston");
-const config = require("app-config");
+import winston from 'winston';
+import config from 'app-config';
 
 const colorizer = winston.format.colorize();
 
@@ -27,4 +27,4 @@ const createConsoleLogger = () => {
   return logger;
 };
 
-module.exports = createConsoleLogger();
+export default createConsoleLogger();

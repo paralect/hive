@@ -1,4 +1,4 @@
-const db = require('db');
+import db from 'db';
 
 function singularize(word) {
   const endings = {
@@ -16,7 +16,7 @@ function singularize(word) {
   );
 }
 
-module.exports = (
+export default (
   resourceName,
   {
     criteria = (ctx) => ({ _id: ctx.params[`${singularize(resourceName)}Id`] }),

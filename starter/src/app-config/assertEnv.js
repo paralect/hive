@@ -1,6 +1,6 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-module.exports = (envs = []) => {
+export default (envs = []) => {
   let missingEnvs = [];
   
   _.each(envs, envName => {
@@ -12,4 +12,4 @@ module.exports = (envs = []) => {
   if (!_.isEmpty(missingEnvs)) {
     throw Error(`Missing env variables: ${missingEnvs.join(', ')}`)
   }
-}
+};

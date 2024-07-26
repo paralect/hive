@@ -1,17 +1,19 @@
-const { render } = require('@react-email/render');
-const { MyEmailComponent } = require('emails/compiled/MyEmailComponent'); 
-const React = require('react');
+import { render } from '@react-email/render';
+import { MyEmailComponent } from 'emails/compiled/MyEmailComponent';
+import React from 'react';
 
-const handler = (ctx) => {
+export const handler = (ctx) => {
   const emailHtml = render(React.createElement(MyEmailComponent, { name: 'test' }));
 
   ctx.body = emailHtml;
   ctx.status = 200;
 };
 
-module.exports.handler = handler;
-
-module.exports.endpoint = {
+export const endpoint = {
   method: "get",
   url: "/",
 };
+
+export default {
+  handler, endpoint
+}

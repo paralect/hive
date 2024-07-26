@@ -12,4 +12,4 @@ MongoServiceError.MORE_THAN_ONE = "MORE_THAN_ONE";
 MongoServiceError.INVALID_SCHEMA = "INVALID_SCHEMA";
 MongoServiceError.INVALID_ARGUMENT = "INVALID_ARGUMENT";
 
-module.exports = MongoServiceError;
+export default MongoServiceError;

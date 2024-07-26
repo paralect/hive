@@ -1,4 +1,4 @@
-const Migration = require("migrations/migration");
+import Migration from 'migrations/migration';
 // const migrationService = require('migrations/migration.service');
 //
 // const userService = require('resources/user/user.service');
@@ -19,4 +19,4 @@ migration.migrate = async () => {
   // ));
 };
 
-module.exports = migration;
+export default migration;

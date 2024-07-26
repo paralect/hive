@@ -1,21 +1,21 @@
-const moment = require("moment");
-const schedule = require("node-schedule");
+import moment from 'moment';
+import schedule from 'node-schedule';
+import requireDir from 'require-dir';
 
-const requireDir = require("require-dir");
-
-requireDir(`${process.env.HIVE_SRC || "."}/scheduler/handlers`, {
-  mapValue: (handler, handlerName) => {
-    console.log(
-      `[scheduler] Registering handler ${handlerName} with cron ${handler.cron}`
-    );
-
-    schedule.scheduleJob(handler.cron, () => {
+export default () => {
+  requireDir(`${process.env.HIVE_SRC || "."}/scheduler/handlers`, {
+    mapValue: (handler, handlerName) => {
       console.log(
-        `[scheduler] ${moment().format()} executing ${handlerName} with cron ${
-          handler.cron
-        }`
+        `[scheduler] Registering handler ${handlerName} with cron ${handler.cron}`
       );
-      handler.handler();
-    });
-  },
-});
+
+      schedule.scheduleJob(handler.cron, () => {
+        console.log(
+          `[scheduler] ${moment().format()} executing ${handlerName} with cron ${handler.cron
+          }`
+        );
+        handler.handler();
+      });
+    },
+  });
+}

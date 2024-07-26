@@ -1,6 +1,8 @@
-const config = require('app-config');
-const userService = require('db').services.users;
-const tokenService = require('db').services.tokens;
+import db from 'db';
+import config from 'app-config';
+
+const userService = db.services.users;
+const tokenService = db.services.tokens;
 
 const storeTokenToState = async (ctx) => {
   let accessToken = ctx.cookies.get('access_token');
@@ -18,7 +20,7 @@ const storeTokenToState = async (ctx) => {
   ctx.state.accessToken = accessToken;
 };
 
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   storeTokenToState(ctx);
 
   let token;

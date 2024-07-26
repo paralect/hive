@@ -1,7 +1,8 @@
-const _ = require('lodash');
-const slug = require('slug');
+import db from 'db';
+import _ from 'lodash';
+import slug from 'slug';
 
-const userService = require('db').services.users;
+const userService = db.services.users;
 
 const formatUsername = ({ username, fullName, email }) => {
   return (
@@ -61,7 +62,7 @@ const ensureUserCreated = async (userData) => {
   };
 };
 
-module.exports = async (userData) => {
+export default async (userData) => {
   const { user, isNew } = await ensureUserCreated(userData);
   return user;
 };

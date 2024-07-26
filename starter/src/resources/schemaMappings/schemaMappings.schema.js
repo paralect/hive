@@ -1,9 +1,9 @@
-const Joi = require('joi');
+import { z } from 'zod';
 
-module.exports = Joi.object({
-  _id: Joi.string(),
-  createdOn: Joi.date(),
-  updatedOn: Joi.date(),
+export default z.object({
+  _id: z.string(),
+  createdOn: z.date(),
+  updatedOn: z.date(),
 
-  mappings: Joi.object(),
+  mappings: z.object(),
 });

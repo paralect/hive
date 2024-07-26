@@ -1,4 +1,4 @@
-const _ = require("lodash");
+import _ from 'lodash';
 
 const formatError = (customError) => {
   const errors = {};
@@ -25,4 +25,4 @@ const attachCustomErrors = async (ctx, next) => {
   await next();
 };
 
-module.exports = attachCustomErrors;
+export default attachCustomErrors;

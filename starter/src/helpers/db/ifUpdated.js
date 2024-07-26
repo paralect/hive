@@ -1,6 +1,6 @@
-const _ = require("lodash");
+import _ from 'lodash';
 
-module.exports = (fieldNames, callback) => {
+export default (fieldNames, callback) => {
   return async ({ doc, prevDoc }) => {
     let isFieldChanged = false;
 

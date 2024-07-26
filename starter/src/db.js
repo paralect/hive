@@ -1,60 +1,52 @@
-const fs = require("fs");
-const _ = require("lodash");
-const requireDir = require("require-dir");
+import fs from "fs";
+import _ from "lodash";
+import requireDir from "require-dir";
+import getSchemas from "helpers/getSchemas";
+import getResources from "helpers/getResources";
+import config from "app-config";
+import { connect } from "lib/node-mongo";
 
-const getSchemas = require("helpers/getSchemas");
-const getResources = require("helpers/getResources");
-
-const config = require("app-config");
-
-const bullMqBus = require("./bullMqBus");
-
-const db = require("lib/node-mongo").connect(config.mongoUri);
+const db = connect(config.mongoUri);
 
 db.services = {};
 db.schemas = {};
 
+
 db.init = async () => {
   const schemaPaths = await getSchemas();
 
-  _.each(
+  await Promise.all(_.map(
     schemaPaths,
-    ({ file: schemaFile, resourceName, name: schemaName }) => {
-      let schema = require(schemaFile);
-      
+    async ({ file: schemaFile, resourceName, name: schemaName }) => {
+      let schema = (await import(schemaFile)).default;
+
       if (process.env.HIVE_SRC) {
         let extendSchemaPath = `${process.env.HIVE_SRC}/resources/${resourceName}/${schemaName}.extends.schema.js`;
-     
         if (fs.existsSync(extendSchemaPath)) {
-          let extendsSchema = require(extendSchemaPath);
-
+          let extendsSchema = (await import(extendSchemaPath)).default;
           schema = schema.append(extendsSchema);
-          console.log('schema', schema);
         }
       }
-
       db.schemas[schemaName] = schema;
-
       db.services[schemaName] = db.createService(`${resourceName}`, {
         validate: (obj) => schema.validate(obj, { allowUnknown: true }),
-        emitter: bullMqBus
       });
+
     }
-  );
+  ));
 
   const resourcePaths = await getResources();
-
-  _.each(resourcePaths, ({ dir }) => {
-    if (fs.existsSync(`${dir}/handlers`)) {
-      requireDir(`${dir}/handlers`);
-    }
-  });
-
-  const mapSchema = require("autoMap/mapSchema");
-  await mapSchema();
-
-  const addHandlers = require("autoMap/addHandlers");
-  await addHandlers();
+  
+  setTimeout(() => {
+    _.each(resourcePaths, ({ dir }) => {
+      if (fs.existsSync(`${dir}/handlers`)) {
+        requireDir(`${dir}/handlers`);
+      }
+    });
+  }, 0);
+  
+  (await import("autoMap/addHandlers")).default();
+  (await import("autoMap/mapSchema")).default();
 };
 
-module.exports = db;
+export default db;

@@ -1,18 +1,19 @@
-const crypto = require('crypto');
-const util = require('util');
+import db from 'db';
+import crypto from 'crypto';
+import util from 'util';
 
 const randomBytes = util.promisify(crypto.randomBytes, crypto);
 
-const setCookie = require('services/setCookie');
+import setCookie from 'services/setCookie';
 
-const tokenService = require('db').services.tokens;
+const tokenService = db.services.tokens;
 
 const generateSecureToken = async (tokenLength = 32) => {
   const buf = await randomBytes(tokenLength);
   return buf.toString('hex');
 };
 
-module.exports = async (ctx, { userId, metadata = null }) => {
+export default async (ctx, { userId, metadata = null }) => {
   const token = await generateSecureToken();
   const otp = await generateSecureToken();
 

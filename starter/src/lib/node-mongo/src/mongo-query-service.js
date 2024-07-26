@@ -1,6 +1,5 @@
-const _ = require("lodash");
-
-const MongoServiceError = require("./mongo-service-error");
+import _ from 'lodash';
+import MongoServiceError from './mongo-service-error';
 
 class MongoQueryService {
   constructor(collection, options = {}) {
@@ -69,4 +68,4 @@ class MongoQueryService {
   }
 }
 
-module.exports = MongoQueryService;
+export default MongoQueryService;

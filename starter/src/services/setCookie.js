@@ -1,8 +1,7 @@
-const psl = require('psl');
-const url = require('url');
-const { env } = require('app-config');
-
-const { webUri } = require('app-config');
+import psl from 'psl';
+import url from 'url';
+import { env } from 'app-config';
+import { webUri } from 'app-config';
 
 let cookiesDomain;
 
@@ -12,7 +11,7 @@ if (webUri) {
   cookiesDomain = parsed.domain;
 }
 
-module.exports = (ctx, { name, value }, options = {}) => {
+export default (ctx, { name, value }, options = {}) => {
   ctx.cookies.set(name, value, {
     domain: '',
     expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000),

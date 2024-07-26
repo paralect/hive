@@ -1,7 +1,7 @@
-const moment = require("moment");
+import moment from 'moment';
 
-module.exports.cron = "* * * * *";
+export const cron = "* * * * *";
 
-module.exports.handler = () => {
+export const handler = () => {
   const yesterday = moment().add(-1, "day").toDate();
 };

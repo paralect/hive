@@ -1,13 +1,15 @@
-const db = require("db");
-const fs = require("fs");
-const path = require("path");
-const _ = require("lodash");
-const validateSchema = require("./migrations.schema");
+import db from "db";
+import fs from "fs";
+import path from "path";
+import _ from "lodash";
+import validateSchema from "./migrations.schema";
 
 const service = db.createService("__migrationVersion", {
   validate: validateSchema,
 });
+
 const migrationsPath = path.join(__dirname, "migrations");
+
 const _id = "migration_version";
 
 const getMigrationNames = () =>
@@ -26,21 +28,18 @@ service.getCurrentMigrationVersion = () =>
     if (!doc) {
       return 0;
     }
-
     return doc.version;
   });
 
 service.getMigrations = () => {
   let migrations = null;
-
   return getMigrationNames()
     .then((names) => {
       migrations = names.map((name) => {
         const migrationPath = path.join(migrationsPath, name);
         // eslint-disable-next-line import/no-dynamic-require, global-require
-        return require(migrationPath);
+        // return require(migrationPath);
       });
-
       return migrations;
     })
     .catch((err) => {
@@ -64,7 +63,6 @@ service.setNewMigrationVersion = (version) =>
 
 service.promiseLimit = (documents = [], limit, operator) => {
   const chunks = _.chunk(documents, limit);
-
   return chunks.reduce((init, chunk) => {
     return init.then(() => {
       return Promise.all(chunk.map((c) => operator(c)));
@@ -72,4 +70,4 @@ service.promiseLimit = (documents = [], limit, operator) => {
   }, Promise.resolve());
 };
 
-module.exports = service;
+export default service;

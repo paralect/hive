@@ -1,7 +1,7 @@
-const _ = require("lodash");
-const db = require("db");
+import _ from 'lodash';
+import db from 'db';
 
-module.exports = (
+export default (
   resourceName,
   { criteria = (ctx) => ({ name: ctx.validatedData.name }) } = {}
 ) => {

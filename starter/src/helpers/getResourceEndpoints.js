@@ -1,11 +1,11 @@
-const fs = require("fs");
-const _ = require("lodash");
+import fs from 'fs';
+import _ from 'lodash';
 
 const {
   promises: { readdir },
 } = fs;
 
-module.exports = async (resourceName) => {
+export default async (resourceName) => {
   let endpointFiles = [];
   
   if (fs.existsSync(`${process.env.HIVE_SRC}/resources/${resourceName}/endpoints`)) {

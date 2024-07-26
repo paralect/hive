@@ -1,6 +1,7 @@
-const tokenService = require('db').services.tokens;
+import db from 'db';
+const tokenService = db.services.tokens;
 
-module.exports = async () => {
+export default async () => {
   const { results } = await tokenService.aggregate([]);
 
   return results;

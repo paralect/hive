@@ -1,39 +1,32 @@
-const Joi = require("joi");
 
-function formatError(joiError) {
+const formatError = (zodError) => {
   const errors = {};
 
-  joiError.details.forEach((error) => {
-    const key = error.path.join(".");
-    errors[key] = errors[key] || [];
-    errors[key].push(error.message);
+  zodError.issues.forEach((error) => {
+    const key = error.path.join('.');
+
+    if (!errors[key]) {
+      errors[key] = [];
+    }
+
+    (errors[key]).push(error.message);
   });
 
   return errors;
-}
+};
 
-function validate(schema) {
-  return async (ctx, next) => {
-    if (!schema.validate) {
-      schema = Joi.object(schema);
-    }
+const validate = (schema) => async (ctx, next) => {
+  const result = await schema.safeParseAsync({
+    ...(ctx.request.body),
+    ...ctx.query,
+    ...ctx.params,
+  });
 
-    const { value, error } = await schema.validate(
-      {
-        ...ctx.request.body,
-        ...ctx.query,
-      },
-      {
-        abortEarly: false,
-        allowUnknown: true,
-      }
-    );
+  if (!result.success) ctx.throw(400, { clientErrors: formatError(result.error) });
 
-    if (error) ctx.throw(400, { errors: formatError(error) });
+  ctx.validatedData = result.data;
 
-    ctx.validatedData = value;
-    await next();
-  };
-}
+  await next();
+};
 
-module.exports = validate;
+export default validate;

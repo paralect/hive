@@ -1,9 +1,9 @@
-const config = require('app-config');
-const nodemailer = require('nodemailer');
+import config from 'app-config';
+import nodemailer from 'nodemailer';
 
 config.assert('smtp');
 
-module.exports = {
+export default {
   sendEmail: async ({ to, subject, html }) => {
     const transporter = nodemailer.createTransport(config.smtp)
 
@@ -12,4 +12,4 @@ module.exports = {
       to, subject, html
     })
   }
-}
+};

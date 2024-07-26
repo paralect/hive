@@ -1,18 +1,18 @@
-const Joi = require("joi");
+import { z } from 'zod';
 
-module.exports.endpoint = {
+export const endpoint = {
   method: "put",
   url: "/trigger-scheduler-handler",
 };
 
-module.exports.requestSchema = {
-  name: Joi.string().required(),
+export const requestSchema = {
+  name: z.string(),
 };
 
-module.exports.handler = async (ctx) => {
+export const handler = async (ctx) => {
   const { name } = ctx.validatedData;
 
-  const schedulerHandler = require(`scheduler/handlers/${name}`);
+  const schedulerHandler = await (import(`scheduler/handlers/${name}`)).default;
 
   try {
     const data = await schedulerHandler.handler();

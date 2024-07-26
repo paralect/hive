@@ -1,14 +1,14 @@
-const Joi = require("joi");
+import { z } from 'zod';
+import isAuthorized from 'middlewares/isAuthorized';
 
-module.exports.handler = async (ctx) => {
+export const handler = async (ctx) => {
   ctx.body = ctx.state.user;
 };
 
-module.exports.middlewares = [require('middlewares/isAuthorized')];
+export const middlewares = [isAuthorized];
+export const requestSchema = z.object({});
 
-module.exports.requestSchema = Joi.object({});
-
-module.exports.endpoint = {
+export const endpoint = {
   method: "GET",
   url: "/me",
 };

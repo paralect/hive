@@ -1,9 +1,10 @@
-const Joi = require("joi");
+import { z } from 'zod';
 
-const schema = Joi.object({
-  _id: Joi.string(),
-  createdOn: Joi.date(),
-  updatedOn: Joi.date(),
-  version: Joi.number().required(),
+const schema = z.object({
+  _id: z.string(),
+  createdOn: z.date(),
+  updatedOn: z.date(),
+  version: z.number(),
 });
-module.exports = schema;
+
+export default schema;

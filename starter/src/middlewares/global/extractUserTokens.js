@@ -12,4 +12,4 @@ const storeTokenToState = async (ctx, next) => {
   await next();
 };
 
-module.exports = storeTokenToState;
+export default storeTokenToState;
