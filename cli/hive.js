@@ -16,9 +16,27 @@ program
   .action(async (dirPath = '.') => {
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
-      // execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
+      
+      const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
+      await execCommand(`mkdir -p ${hiveProjectDir}`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/ ${hiveProjectDir}`);
 
-      tsx.require('./../starter/src/app.js', __filename);
+      tsx.require(`${hiveProjectDir}/src/app.js`, __filename); // TSX doesn't work inside node_moduels
+    } catch (error) {
+      console.error('An error occurred:', error.message);
+    }
+  });
+
+  program
+  .command('prepare [dirPath]')
+  .description('Prepare Hive server')
+  .action(async (dirPath = '.') => {
+    try {
+      process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
+      const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
+
+      await execCommand(`mkdir -p ${hiveProjectDir}`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/ ${hiveProjectDir}`);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
