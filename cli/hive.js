@@ -8,6 +8,7 @@ const mergeDirs = require('./helpers/mergeDirs');
 const execCommand = require('./helpers/execCommand');
 const downloadDirectory = require('./helpers/downloadDirectory');
 const axios = require('axios');
+const tsx = require('tsx/cjs/api')
 
 program
   .command('run [dirPath]')
@@ -16,7 +17,8 @@ program
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
       execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
-      // require('./../starter/src/app.js');
+
+      tsx.require('./../starter/src/app.js', __filename);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
