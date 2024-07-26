@@ -36,7 +36,7 @@ program
       const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
 
       await execCommand(`mkdir -p ${hiveProjectDir}`);
-      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/ ${hiveProjectDir}`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/. ${hiveProjectDir}`);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
