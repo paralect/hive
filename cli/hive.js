@@ -16,7 +16,7 @@ program
   .action(async (dirPath = '.') => {
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
-      execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
+      // execCommand(`npm run dev --prefix ${path.resolve(__dirname, '../starter')}`);
 
       tsx.require('./../starter/src/app.js', __filename);
     } catch (error) {
