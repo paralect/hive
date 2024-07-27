@@ -1,10 +1,7 @@
 import { z } from 'zod';
+import dbSchema from 'helpers/schema/db.schema';
 
-const users = z.object({
-  _id: z.string(),
-  createdOn: z.date(),
-  updatedOn: z.date(),
-
+const users = dbSchema.extend({
   email: z.string().email(),
   fullName: z.string(),
   avatarUrl: z.string().url().optional(),

@@ -5,20 +5,24 @@ import schemaMappings from "./schemaMappings.js";
 const schemaMappingService = db.services.schemaMappings;
 
 const getDependentFields = (schema, dependentFieldName) => {
-  let targetSchema = schema[dependentFieldName];
-  if (targetSchema.type === "array") {
-    targetSchema = targetSchema.items[0];
+  let targetSchema = schema.shape[dependentFieldName].shape;
+
+  if (targetSchema instanceof ZodArray) {
+    targetSchema = targetSchema.element;
   }
-  return Object.keys(targetSchema.keys).filter(
-    (key) => !_.includes(["_id", "createdOn", "updatedOn"], key)
+
+  return Object.keys(targetSchema).filter(
+    (key) => !_.includes(['_id', 'createdOn', 'updatedOn'], key)
   );
 };
-
-const joiSchemaToSchemaMappings = () => {
+const zodSchemaToSchemaMappings = () => {
   const newSchemaMappings = {};
+
   Object.keys(schemaMappings).forEach((schemaName) => {
-    const schema = db.schemas[schemaName].describe().keys;
+    const schema = db.schemas[schemaName];
+
     newSchemaMappings[schemaName] = {};
+
     Object.keys(schemaMappings[schemaName]).forEach((fieldName) => {
       newSchemaMappings[schemaName][fieldName] = {
         schema: schemaMappings[schemaName][fieldName].schema,
@@ -26,6 +30,7 @@ const joiSchemaToSchemaMappings = () => {
       };
     });
   });
+
   return newSchemaMappings;
 };
 
@@ -33,13 +38,14 @@ export default async () => {
   const prevSchema = await schemaMappingService.findOne({});
   const prevSchemaMappings = prevSchema?.mappings;
   if (!prevSchemaMappings) {
-    const initialSchemaMappings = joiSchemaToSchemaMappings();
+    const initialSchemaMappings = zodSchemaToSchemaMappings();
     schemaMappingService.create({ mappings: initialSchemaMappings });
   } else {
     const schemaNames = Object.keys(schemaMappings);
     await Promise.all(
       schemaNames.map(async (schemaName) => {
-        const schema = db.schemas[schemaName].describe().keys;
+        const schema = db.schemas[schemaName];
+
         const fieldNames = Object.keys(schemaMappings[schemaName]);
         await Promise.all(
           fieldNames.map(async (fieldName) => {
@@ -88,7 +94,7 @@ export default async () => {
     );
     schemaMappingService.atomic.update(
       { _id: prevSchema._id },
-      { $set: { mappings: joiSchemaToSchemaMappings() } }
+      { $set: { mappings: zodSchemaToSchemaMappings() } }
     );
   }
 };

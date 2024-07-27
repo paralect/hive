@@ -1,10 +1,6 @@
 import { z } from 'zod';
+import dbSchema from 'helpers/schema/db.schema';
 
-const schema = z.object({
-  _id: z.string(),
-  createdOn: z.date(),
-  updatedOn: z.date(),
+export default dbSchema.extend({
   version: z.number(),
 });
-
-export default schema;

@@ -2,14 +2,17 @@ import _ from "lodash";
 import db from "db";
 import ifUpdated from "helpers/db/ifUpdated";
 import schemaMappings from "./schemaMappings.js";
+import { ZodArray } from 'zod';
 
 const getDependentFields = (schema, dependentFieldName) => {
-  let targetSchema = schema[dependentFieldName];
-  if (targetSchema.type === "array") {
-    [targetSchema] = targetSchema.items;
+  let targetSchema = schema.shape[dependentFieldName];
+
+  if (targetSchema instanceof ZodArray) {
+    targetSchema = targetSchema.element;
   }
-  return Object.keys(targetSchema.keys).filter(
-    (key) => !_.includes(["_id", "createdOn", "updatedOn"], key)
+
+  return Object.keys(targetSchema.shape).filter(
+    (key) => !_.includes(['_id', 'createdOn', 'updatedOn'], key)
   );
 };
 
@@ -18,7 +21,7 @@ const updatedSchemaMappings = (() => {
   const schemaNames = Object.keys(schemaMappings);
   schemaNames.forEach((schemaName) => {
     const dependentFieldNames = Object.keys(schemaMappings[schemaName]);
-    const schema = db.schemas[schemaName].describe().keys;
+    const schema = db.schemas[schemaName];
     dependentFieldNames.forEach((dependentFieldName) => {
       const dependentFields = getDependentFields(schema, dependentFieldName);
       if (!_.isEmpty(dependentFields)) {
@@ -29,6 +32,7 @@ const updatedSchemaMappings = (() => {
         };
       }
     });
+
   });
   return result;
 })();
@@ -104,29 +108,29 @@ const addOnDependentEntitiesUpdatedHandlers = ({ schemaName }) => {
   dependentFieldNames.forEach((dependentFieldName) => {
     const dependentFieldSchemaName =
       schemaMappings[schemaName][dependentFieldName].schema;
-    const schema = db.schemas[schemaName].describe().keys;
+    const schema = db.schemas[schemaName];
     const dependentFields = getDependentFields(schema, dependentFieldName);
     db.services[dependentFieldSchemaName].on(
       "updated",
       ifUpdated(dependentFields, async ({ doc }) => {
         const toUpdate = _.pick(doc, ["_id", ...dependentFields]);
-        if (schema[dependentFieldName].type === "array") {
-          db.services[schemaName].atomic.update(
+        if (schema.shape[dependentFieldName] instanceof ZodArray) {
+          db.services[schemaName].atomic.updateOne(
             { [`${dependentFieldName}._id`]: doc._id },
             {
               $set: {
                 [`${dependentFieldName}.$`]: toUpdate,
               },
-            }
+            },
           );
         } else {
-          db.services[schemaName].atomic.update(
+          db.services[schemaName].atomic.updateOne(
             { [`${dependentFieldName}._id`]: doc._id },
             {
               $set: {
                 [`${dependentFieldName}`]: toUpdate,
               },
-            }
+            },
           );
         }
       })

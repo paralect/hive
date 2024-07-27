@@ -11,7 +11,6 @@ const db = connect(config.mongoUri);
 db.services = {};
 db.schemas = {};
 
-
 db.init = async () => {
   const schemaPaths = await getSchemas();
 
@@ -29,7 +28,9 @@ db.init = async () => {
       }
       db.schemas[schemaName] = schema;
       db.services[schemaName] = db.createService(`${resourceName}`, {
-        validate: (obj) => schema.validate(obj, { allowUnknown: true }),
+        validate: (obj) => { 
+          return schema.passthrough().parseAsync(obj)
+        },
       });
 
     }

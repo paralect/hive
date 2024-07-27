@@ -1,9 +1,6 @@
 import { z } from 'zod';
+import dbSchema from 'helpers/schema/db.schema';
 
-export default z.object({
-  _id: z.string(),
-  createdOn: z.date(),
-  updatedOn: z.date(),
-
-  mappings: z.object(),
+export default dbSchema.extend({
+  mappings: z.object({}),
 });
