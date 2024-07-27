@@ -9,6 +9,10 @@ console.log('process.env.HIVE_SRC', process.env.HIVE_SRC)
 
 if (process.env.HIVE_SRC) {
   dotenv.config({
+    path: `${process.env.HIVE_SRC}/app-config/.env`,
+  });
+
+  dotenv.config({
     path: `${process.env.HIVE_SRC}/app-config/.env.app`,
   });
 }
