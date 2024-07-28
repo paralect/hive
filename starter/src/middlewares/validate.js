@@ -16,7 +16,7 @@ const formatError = (zodError) => {
 };
 
 const validate = (schema) => async (ctx, next) => {
-  const result = await schema.safeParseAsync({
+  const result = await schema.passthrough().safeParseAsync({
     ...(ctx.request.body),
     ...ctx.query,
     ...ctx.params,
