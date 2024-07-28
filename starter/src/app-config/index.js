@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import fs from "fs";
 import dotenv from "dotenv";
 import appConfig from "./app.js";
@@ -17,16 +18,23 @@ if (process.env.HIVE_SRC) {
   });
 }
 
-if (process.env.HIVE_SRC) {
-  let pluginConfigPath = `${process.env.HIVE_SRC}/app-config/app.js`;
-  // pluginConfig = (await import(pluginConfigPath)).default;
-  if (fs.existsSync(pluginConfigPath)) {
-    appConfig = { ...appConfig };
-  }
-}
-
 const env = process.env.APP_ENV || "development";
-const config = {
+
+let config = {
+ async init() {
+  if (process.env.HIVE_SRC) {
+    let pluginConfigPath = `${process.env.HIVE_SRC}/app-config/app.js`;
+
+    if (fs.existsSync(pluginConfigPath)) {
+      const { default: pluginConfig } = await (import(pluginConfigPath))
+console.log('plugin config', pluginConfig);
+_.extend(config, pluginConfig);
+
+    }
+  }
+
+}, 
+ _hive: {},
   env,
   port: process.env.PORT || 3001,
   domain:
@@ -52,4 +60,3 @@ const config = {
     }
   },
 };
-export default config;

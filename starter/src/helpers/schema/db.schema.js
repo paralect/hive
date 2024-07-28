@@ -4,7 +4,7 @@ export default z
   .object({
     _id: z.string(),
 
-    createdOn: z.coerce.date(),
-    updatedOn: z.coerce.date(),
+    createdOn: z.coerce.date().default(() => new Date()),
+    updatedOn: z.coerce.date().default(() => new Date()),
   })
   .strict();

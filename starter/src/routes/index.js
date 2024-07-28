@@ -1,13 +1,16 @@
 import _ from "lodash";
 import getResources from "helpers/getResources";
+import getMiddlewares from "helpers/getMiddlewares";
 import getResourceEndpoints from "helpers/getResourceEndpoints";
 import mount from "koa-mount";
 import Router from "@koa/router";
 import validate from "middlewares/validate";
 import db from "db";
 import tryToAttachUser from "middlewares/global/tryToAttachUser";
-import attachCustomErrors from "./middlewares/attachCustomErrors.js";
-import routeErrorHandler from "./middlewares/routeErrorHandler.js";
+import attachCustomErrors from "./middlewares/attachCustomErrors";
+import routeErrorHandler from "./middlewares/routeErrorHandler";
+import isAuthorized from "middlewares/isAuthorized";
+import config from 'app-config';
 
 const requestLogService = db.createService("_request_logs");
 
@@ -59,8 +62,10 @@ const defineRoutes = async (app) => {
   app.use(attachCustomErrors);
   app.use(routeErrorHandler);
   app.use(tryToAttachUser);
-  
-  const resources = await getResources();
+
+ 
+
+  const [resources, allMiddlewares] = await Promise.all([getResources(), getMiddlewares()]);
 
   _.each(resources, async ({ name: resourceName }) => {
     const resourceRouter = new Router();
@@ -68,7 +73,7 @@ const defineRoutes = async (app) => {
     const endpoints = await Promise.all((await getResourceEndpoints(resourceName))
       .map(async ({ file: endpointFile, name }) => {
         let endpointDef = (await import(endpointFile));
-        
+
         if (!endpointDef.endpoint) {
           console.log('missing endpoint for', name);
         }
@@ -92,15 +97,15 @@ const defineRoutes = async (app) => {
 
     endpoints.forEach(({ endpoint, requestSchema, middlewares = [], handler }) => {
       const additionalMiddlewares = [];
-      
+
       if (requestSchema) {
         additionalMiddlewares.push(validate(requestSchema));
       }
-      
+
       let targetRouter;
 
       let url = endpoint.absoluteUrl || endpoint.url;
-      
+
       if (url.startsWith("$HOST/")) {
         url = url.replace("$HOST", "");
         targetRouter = globalRouter;
@@ -108,6 +113,30 @@ const defineRoutes = async (app) => {
         targetRouter = globalRouter;
       } else {
         targetRouter = resourceRouter;
+      }
+
+      middlewares = middlewares.map(middleware => {
+        if (_.isString(middleware)) {
+          if (!allMiddlewares.find(m => m.name === middleware)) {
+            throw new Error(`Middleware ${middleware} not found`);
+          }
+
+          middleware = allMiddlewares.find(m => m.name === middleware).fn;
+        } else if (_.isArray(middleware)) {
+          const [middlewareName, ...middlewareParams] = middleware;
+          
+          if (!allMiddlewares.find(m => m.name === middlewareName)) {
+            throw new Error(`Middleware ${middlewareName} not found`);
+          }
+
+          middleware = allMiddlewares.find(m => m.name === middlewareName).fn(...middlewareParams);
+        }
+
+        return middleware;
+      });
+
+      if (config._hive.isRequireAuthAllEndpoints && !endpoint.isNoAuthRequired) {
+        app.use(isAuthorized);
       }
 
       targetRouter[endpoint.method?.toLowerCase() || "get"](
