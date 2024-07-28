@@ -57,13 +57,12 @@ const logRequestToMongo = async (ctx, next) => {
   }
 };
 
-const defineRoutes = async (app) => {
+export default async (app) => {
   app.use(logRequestToMongo);
   app.use(attachCustomErrors);
   app.use(routeErrorHandler);
   app.use(tryToAttachUser);
 
- 
 
   const [resources, allMiddlewares] = await Promise.all([getResources(), getMiddlewares()]);
 
@@ -96,12 +95,6 @@ const defineRoutes = async (app) => {
       }));
 
     endpoints.forEach(({ endpoint, requestSchema, middlewares = [], handler }) => {
-      const additionalMiddlewares = [];
-
-      if (requestSchema) {
-        additionalMiddlewares.push(validate(requestSchema));
-      }
-
       let targetRouter;
 
       let url = endpoint.absoluteUrl || endpoint.url;
@@ -122,21 +115,23 @@ const defineRoutes = async (app) => {
           }
 
           middleware = allMiddlewares.find(m => m.name === middleware).fn;
-        } else if (_.isArray(middleware)) {
-          const [middlewareName, ...middlewareParams] = middleware;
-          
-          if (!allMiddlewares.find(m => m.name === middlewareName)) {
-            throw new Error(`Middleware ${middlewareName} not found`);
-          }
-
-          middleware = allMiddlewares.find(m => m.name === middlewareName).fn(...middlewareParams);
+        } else if (middleware?.name && middleware?.args) {
+          if (!allMiddlewares.find(m => m.name === middleware.name)) {
+            throw new Error(`Middleware ${middleware.name} not found`);
+          };
+          middleware = allMiddlewares.find(m => m.name === middleware.name).fn(...middleware.args);
         }
 
         return middleware;
+      }).map(middleware => {
+        middleware.runOrder = _.isNumber(middleware.runOrder) ? middleware.runOrder : 1;
+        return middleware;
       });
 
-      if (config._hive.isRequireAuthAllEndpoints && !endpoint.isNoAuthRequired) {
-        app.use(isAuthorized);
+
+      if (config._hive.isRequireAuthAllEndpoints) {
+        isAuthorized.runOrder = 0;
+        middlewares.unshift(isAuthorized);
       }
 
       targetRouter[endpoint.method?.toLowerCase() || "get"](
@@ -146,8 +141,8 @@ const defineRoutes = async (app) => {
           ctx.state.endpoint = endpoint;
           await next();
         },
-        ...additionalMiddlewares,
-        ...middlewares,
+        validate(requestSchema),
+        ..._.sortBy(middlewares, m => m.runOrder),
         handler
       );
     });
@@ -156,5 +151,3 @@ const defineRoutes = async (app) => {
     app.use(mount(`/${resourceName}`, resourceRouter.routes()));
   });
 };
-
-export default defineRoutes;

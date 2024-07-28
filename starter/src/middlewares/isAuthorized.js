@@ -25,6 +25,11 @@ export default async (ctx, next) => {
 
   let token;
 
+  if (ctx.state.isSkipAuth) {
+    ctx.state.user = null;
+    return next();
+  }
+
   if (ctx.state.accessToken) {
     token = await tokenService.findOne({ token: ctx.state.accessToken });
   }
