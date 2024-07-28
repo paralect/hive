@@ -8,7 +8,7 @@ if (process.env.HIVE_SRC) {
 
 import Koa from "koa";
 import http from "http";
-import config, { init as initConfig } from "app-config";
+import config from "app-config";
 import logger from "logger";
 import cors from "@koa/cors";
 import helmet from "koa-helmet";
@@ -23,7 +23,7 @@ import get from "resources/health/endpoints/get";
 import scheduler from "./scheduler";
 
 const main = async () => {
-  await initConfig();
+  await config.init();
   await db.init();
 
   process.on("unhandledRejection", (reason, p) => {

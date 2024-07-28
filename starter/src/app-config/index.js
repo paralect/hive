@@ -21,20 +21,18 @@ if (process.env.HIVE_SRC) {
 const env = process.env.APP_ENV || "development";
 
 let config = {
- async init() {
-  if (process.env.HIVE_SRC) {
-    let pluginConfigPath = `${process.env.HIVE_SRC}/app-config/app.js`;
+  async init() {
+    if (process.env.HIVE_SRC) {
+      let pluginConfigPath = `${process.env.HIVE_SRC}/app-config/app.js`;
 
-    if (fs.existsSync(pluginConfigPath)) {
-      const { default: pluginConfig } = await (import(pluginConfigPath))
-console.log('plugin config', pluginConfig);
-_.extend(config, pluginConfig);
-
+      if (fs.existsSync(pluginConfigPath)) {
+        const { default: pluginConfig } = await (import(pluginConfigPath))
+        _.extend(config, pluginConfig);
+      }
     }
-  }
+  },
 
-}, 
- _hive: {},
+  _hive: {},
   env,
   port: process.env.PORT || 3001,
   domain:
@@ -60,3 +58,5 @@ _.extend(config, pluginConfig);
     }
   },
 };
+
+export default config;
