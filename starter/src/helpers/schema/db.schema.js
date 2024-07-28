@@ -6,5 +6,4 @@ export default z
 
     createdOn: z.coerce.date().default(() => new Date()),
     updatedOn: z.coerce.date().default(() => new Date()),
-  })
-  .strict();
+  });
