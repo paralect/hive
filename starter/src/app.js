@@ -18,13 +18,14 @@ import requestLogger from "koa-logger";
 import db from "db";
 import socketIo from "socketIo";
 import mount from "koa-mount";
-import routes from "routes";
 import get from "resources/health/endpoints/get";
-import scheduler from "./scheduler";
 
 const main = async () => {
   await config.init();
   await db.init();
+
+  const routes = (await import("routes")).default;
+  const scheduler = (await import("./scheduler")).default;
 
   process.on("unhandledRejection", (reason, p) => {
     console.trace(reason.stack);
