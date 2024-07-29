@@ -1,20 +1,13 @@
 import _ from "lodash";
 import db from "db";
-import schemaMappings from "./schemaMappings.js";
+import fs from 'fs';
+import { z, ZodArray } from 'zod';
+
+import schemaMappings from "./schemaMappings";
+import getDependentFields from './getDependentFields';
 
 const schemaMappingService = db.services.schemaMappings;
 
-const getDependentFields = (schema, dependentFieldName) => {
-  let targetSchema = schema.shape[dependentFieldName].shape;
-
-  if (targetSchema instanceof ZodArray) {
-    targetSchema = targetSchema.element;
-  }
-
-  return Object.keys(targetSchema).filter(
-    (key) => !_.includes(['_id', 'createdOn', 'updatedOn'], key)
-  );
-};
 const zodSchemaToSchemaMappings = () => {
   const newSchemaMappings = {};
 
@@ -30,7 +23,7 @@ const zodSchemaToSchemaMappings = () => {
       };
     });
   });
-
+  console.log('newSchemaMappings', newSchemaMappings)
   return newSchemaMappings;
 };
 
@@ -70,7 +63,7 @@ export default async () => {
               );
               await Promise.all(
                 uniqueDependentEntities.map(async (entity) => {
-                  if (schema[fieldName].type === "array") {
+                  if (schema[fieldName] instanceof ZodArray) {
                     await db.services[schemaName].atomic.update(
                       { [`${fieldName}._id`]: entity._id },
                       {

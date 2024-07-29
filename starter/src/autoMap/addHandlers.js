@@ -1,20 +1,9 @@
 import _ from "lodash";
 import db from "db";
 import ifUpdated from "helpers/db/ifUpdated";
-import schemaMappings from "./schemaMappings.js";
+import schemaMappings from "./schemaMappings";
+import getDependentFields from './getDependentFields';
 import { ZodArray } from 'zod';
-
-const getDependentFields = (schema, dependentFieldName) => {
-  let targetSchema = schema.shape[dependentFieldName];
-
-  if (targetSchema instanceof ZodArray) {
-    targetSchema = targetSchema.element;
-  }
-
-  return Object.keys(targetSchema.shape).filter(
-    (key) => !_.includes(['_id', 'createdOn', 'updatedOn'], key)
-  );
-};
 
 const updatedSchemaMappings = (() => {
   const result = {};
