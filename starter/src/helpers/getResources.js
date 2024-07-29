@@ -26,8 +26,7 @@ export default async () => {
 
   return resourceDirs
     .filter(({ dirName }) => dirName !== "health")
-    .map(({ dirName, isHive }) => ({
-      dir: isHive ? path.resolve(`${process.env.HIVE_SRC}/resources/${dirName}`) : path.resolve(`${__dirname}/../resources/${dirName}`),
+    .map(({ dirName }) => ({
       name: dirName,
     }));
 };
