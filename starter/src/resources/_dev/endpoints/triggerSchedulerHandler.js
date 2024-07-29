@@ -12,7 +12,7 @@ export const requestSchema = z.object({
 export const handler = async (ctx) => {
   const { name } = ctx.validatedData;
 
-  const schedulerHandler = await (import(`scheduler/handlers/${name}`));
+  const schedulerHandler = await (import(`${process.env.HIVE_SRC}/scheduler/handlers/${name}`));
 
   try {
     const data = await schedulerHandler.handler();
