@@ -5,9 +5,9 @@ export const endpoint = {
   url: "/trigger-scheduler-handler",
 };
 
-export const requestSchema = {
+export const requestSchema = z.object({
   name: z.string(),
-};
+});
 
 export const handler = async (ctx) => {
   const { name } = ctx.validatedData;
