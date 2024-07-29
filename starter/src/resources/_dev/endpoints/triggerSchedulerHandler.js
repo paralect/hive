@@ -28,3 +28,5 @@ export const handler = async (ctx) => {
     };
   }
 };
+
+export const middlewares = ['allowNoAuth'];
