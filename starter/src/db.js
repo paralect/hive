@@ -1,8 +1,8 @@
 import fs from "fs";
 import _ from "lodash";
-import requireDir from "require-dir";
 import getSchemas from "helpers/getSchemas";
 import getResources from "helpers/getResources";
+import importHandlers from "helpers/importHandlers";
 import config from "app-config";
 import { connect } from "lib/node-mongo";
 
@@ -28,7 +28,7 @@ db.init = async () => {
       }
       db.schemas[schemaName] = schema;
       db.services[schemaName] = db.createService(`${resourceName}`, {
-        validate: (obj) => { 
+        validate: (obj) => {
           return { value: schema.passthrough().parse(obj) };
         },
       });
@@ -37,15 +37,13 @@ db.init = async () => {
   ));
 
   const resourcePaths = await getResources();
-  
+
   setTimeout(() => {
-    _.each(resourcePaths, ({ dir }) => {
-      if (fs.existsSync(`${dir}/handlers`)) {
-        requireDir(`${dir}/handlers`);
-      }
+    _.each(resourcePaths, ({ name }) => {
+      importHandlers(name)
     });
   }, 0);
-  
+
   (await import("autoMap/addHandlers")).default();
   (await import("autoMap/mapSchema")).default();
 };

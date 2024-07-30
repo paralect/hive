@@ -96,6 +96,7 @@ export default async (app) => {
 
     endpoints.forEach(({ endpoint, requestSchema, middlewares = [], handler }) => {
       let targetRouter;
+      console.log('[routes] Register endpoint', resourceName, endpoint?.method || 'GET', endpoint?.url);
 
       let url = endpoint.absoluteUrl || endpoint.url;
 
