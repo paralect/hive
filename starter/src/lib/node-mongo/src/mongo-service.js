@@ -10,6 +10,7 @@ const defaultOptions = {
   useStringId: true,
   validate: undefined,
   emitter: undefined,
+  secureFields: ['verySecureField'],
 
   onBeforeCreated: ({ docs }) => docs,
 };
@@ -111,20 +112,28 @@ class MongoService extends MongoQueryService {
     return this._bus.on(`${this._collection.name}:${eventName}`, handler);
   }
 
-  onPropertiesUpdated(fieldNames, handler) {
+  onUpdated(fieldNames = [], handler = (e) => { }) {
     return this.on(`${this._collection.name}:${eventName}`, (event) => {
       const { doc, prevDoc } = event;
 
       let isFieldChanged = false;
 
-      _.forEach(fieldNames, (fieldName) => {
-        if (!_.isEqual(doc[fieldName], prevDoc[fieldName])) {
-          isFieldChanged = true;
-          return false; // break loop
-        }
+      if (_.isArray(fieldNames)) {
+        _.forEach(fieldNames, (fieldName) => {
+          if (!_.isEqual(doc[fieldName], prevDoc[fieldName])) {
+            isFieldChanged = true;
+            return false; // break loop
+          }
 
-        return true;
-      });
+          return true;
+        });
+      } else if (_.isObject(fieldNames)) {
+        const fieldName = Object.keys(fieldNames)[0];
+
+        if (_.isEqual(_.get(doc, fieldName), fieldNames[fieldName]) && !_.isEqual(_.get(doc, fieldName), _.get(prevDoc, fieldName))) {
+          isFieldChanged = true;
+        }
+      }
 
       if (isFieldChanged) handler(event);
     });
@@ -158,6 +167,10 @@ class MongoService extends MongoQueryService {
       });
     });
 
+    created = created.map(doc => {
+      return _.omit(doc, options.isIncludeSecureFields ? [] : this._options.secureFields);
+    })
+
     return created.length > 1 ? created : created[0];
   }
 
@@ -184,7 +197,7 @@ class MongoService extends MongoQueryService {
     if (this._options.addUpdatedOnField)
       entity.updatedOn = new Date().toISOString();
     entity = await updateFn(entity);
-    const updated = await this._validate(entity);
+    let updated = await this._validate(entity);
 
     await this._collection.update(
       { ...query, _id: doc._id },
@@ -192,10 +205,13 @@ class MongoService extends MongoQueryService {
       options
     );
 
+
     this._bus.emit(`${this._collection.name}:updated`, {
       doc: updated,
       prevDoc: doc,
     });
+
+    updated = _.omit(updated, options.isIncludeSecureFields ? [] : this._options.secureFields);
 
     return updated;
   }
@@ -213,7 +229,7 @@ class MongoService extends MongoQueryService {
     const { results: docs } = await this.find(query, findOptions);
     if (docs.length === 0) return [];
 
-    const updated = await Promise.all(
+    let updated = await Promise.all(
       docs.map(async (doc) => {
         let entity = _.cloneDeep(doc);
 
@@ -242,6 +258,8 @@ class MongoService extends MongoQueryService {
         prevDoc: docs[index],
       });
     });
+
+    updated = updated.map(doc => _.omit(doc, options.isIncludeSecureFields ? [] : this._options.secureFields));
 
     return updated;
   }

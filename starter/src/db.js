@@ -17,7 +17,7 @@ db.init = async () => {
   await Promise.all(_.map(
     schemaPaths,
     async ({ file: schemaFile, resourceName, name: schemaName }) => {
-      let schema = (await import(schemaFile)).default;
+      let { default: schema, secureFields = [] } = (await import(schemaFile));
 
       if (process.env.HIVE_SRC) {
         let extendSchemaPath = `${process.env.HIVE_SRC}/resources/${resourceName}/${schemaName}.extends.schema.js`;
@@ -27,12 +27,13 @@ db.init = async () => {
         }
       }
       db.schemas[schemaName] = schema;
+
       db.services[schemaName] = db.createService(`${resourceName}`, {
         validate: (obj) => {
           return { value: schema.passthrough().parse(obj) };
         },
+        secureFields: secureFields,
       });
-
     }
   ));
 
