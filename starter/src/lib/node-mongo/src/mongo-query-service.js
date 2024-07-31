@@ -42,7 +42,9 @@ class MongoQueryService {
 
     return {
       pagesCount,
-      results,
+      results: results.map(doc => {
+        return _.omit(doc, opt.isIncludeSecureFields ? [] : this._options.secureFields || []);
+      }),
       count,
     };
   }
@@ -58,8 +60,13 @@ class MongoQueryService {
     //     )}`
     //   );
     // }
+    let result = results[0] || null;
 
-    return results[0] || null;
+    if (result && !options.isIncludeSecureFields) {
+      result = _.omit(result, this._options.secureFields || []);
+    }
+    
+    return result;
   }
 
   async exists(query, options = {}) {
