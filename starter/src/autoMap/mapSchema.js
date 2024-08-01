@@ -68,6 +68,9 @@ export default async () => {
                       { [`${fieldName}._id`]: entity._id },
                       {
                         $set: { [`${fieldName}.$`]: entity },
+                      },
+                      {
+                        multi: true,
                       }
                     );
                   } else {
@@ -75,6 +78,9 @@ export default async () => {
                       { [`${fieldName}._id`]: entity._id },
                       {
                         $set: { [`${fieldName}`]: entity },
+                      },
+                      {
+                        multi: true,
                       }
                     );
                   }
