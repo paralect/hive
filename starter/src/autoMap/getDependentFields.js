@@ -26,7 +26,9 @@ const getZodKeys = schema => {
 
 export default (schema, dependentFieldName) => {
   let targetSchema = schema.shape[dependentFieldName];
-  let zodKeys = getZodKeys(targetSchema)
+  let zodKeys = getZodKeys(targetSchema);
+
+  zodKeys = _.uniq(zodKeys.map(key => key.split('.')[0]));
 
   return zodKeys.filter(
     (key) => !_.includes(['_id', 'createdOn', 'updatedOn'], key)
