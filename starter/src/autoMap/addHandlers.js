@@ -104,22 +104,28 @@ const addOnDependentEntitiesUpdatedHandlers = ({ schemaName }) => {
       ifUpdated(dependentFields, async ({ doc }) => {
         const toUpdate = _.pick(doc, ["_id", ...dependentFields]);
         if (schema.shape[dependentFieldName] instanceof ZodArray) {
-          db.services[schemaName].atomic.updateOne(
+          db.services[schemaName].atomic.update(
             { [`${dependentFieldName}._id`]: doc._id },
             {
               $set: {
                 [`${dependentFieldName}.$`]: toUpdate,
               },
             },
+            {
+              multi: true,
+            }
           );
         } else {
-          db.services[schemaName].atomic.updateOne(
+          db.services[schemaName].atomic.update(
             { [`${dependentFieldName}._id`]: doc._id },
             {
               $set: {
                 [`${dependentFieldName}`]: toUpdate,
               },
             },
+            {
+              multi: true,
+            }
           );
         }
       })
