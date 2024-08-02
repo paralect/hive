@@ -253,7 +253,7 @@ class MongoService extends MongoQueryService {
     );
 
     updated.forEach((doc, index) => {
-      this._bus.emit("updated", {
+      this._bus.emit(`${this._collection.name}:updated`, {
         doc,
         prevDoc: docs[index],
       });
