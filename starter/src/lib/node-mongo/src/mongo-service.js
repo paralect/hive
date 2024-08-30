@@ -182,7 +182,7 @@ class MongoService extends MongoQueryService {
       );
     }
 
-    const findOptions = {};
+    const findOptions = { isIncludeSecureFields: true };
     if (options.session) findOptions.session = options.session;
     const doc = await this.findOne(query, findOptions);
     if (!doc) {
