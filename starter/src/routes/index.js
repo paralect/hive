@@ -144,7 +144,13 @@ export default async (app) => {
         },
         validate(requestSchema),
         ..._.sortBy(middlewares, m => m.runOrder),
-        handler
+        async ctx => {
+          const result = await handler(ctx);
+
+          if (!ctx.body && result) {
+            ctx.body = result;
+          }
+        }
       );
     });
 
