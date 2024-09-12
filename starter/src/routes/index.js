@@ -147,8 +147,8 @@ export default async (app) => {
         async ctx => {
           const result = await handler(ctx);
 
-          if (!ctx.body && result) {
-            ctx.body = result;
+          if (!ctx.body) {
+            ctx.body = result || { isOk: true };
           }
         }
       );
