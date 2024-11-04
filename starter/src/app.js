@@ -39,7 +39,14 @@ const main = async () => {
 
   qs(app);
 
-  app.use(bodyParser({ enableTypes: ["json", "form", "text"] }));
+  app.use(bodyParser({
+    enableTypes: ["json", "form", "text"],
+
+    formLimit: '10mb',
+    textLimit: '10mb',
+    jsonLimit: '10mb',
+  }));
+
   app.use(mount("/health", get.handler));
   app.use(requestLogger());
 

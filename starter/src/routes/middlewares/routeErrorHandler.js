@@ -4,12 +4,12 @@ const routeErrorHandler = async (ctx, next) => {
   try {
     await next();
   } catch (error) {
+    console.log("Route Error", error, error.stack);
+
     const clientError = error.errors;
     const serverError = { global: error.message };
 
     const errors = clientError || serverError;
-
-    console.log("Route Error", errors);
 
     logger.error(errors);
 
