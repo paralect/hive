@@ -8,7 +8,7 @@ const storeTokenToState = async (ctx) => {
   let accessToken = ctx.cookies.get('access_token');
 
   const { authorization } = ctx.headers;
-  
+
   if (!accessToken && authorization) {
     accessToken = authorization.replace('Bearer', '').trim();
   }
@@ -43,6 +43,10 @@ export default async (ctx, next) => {
   }
 
   if (ctx.state.user) {
+    return next();
+  }
+
+  if (ctx.state.isAllowAnonymous) {
     return next();
   }
 
