@@ -66,8 +66,8 @@ export default async (app) => {
 
   const [resources, allMiddlewares] = await Promise.all([getResources(), getMiddlewares()]);
 
-  if (config._hive.globalMiddlewares) {
-    config._hive.globalMiddlewares.forEach(globalMiddleware => {
+  if (config._hive.globalMiddlewaresFn) {
+    config._hive.globalMiddlewaresFn().forEach(globalMiddleware => {
       app.use(globalMiddleware);
     })
   }
