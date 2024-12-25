@@ -66,6 +66,12 @@ export default async (app) => {
 
   const [resources, allMiddlewares] = await Promise.all([getResources(), getMiddlewares()]);
 
+  if (config._hive.globalMiddlewares) {
+    config._hive.globalMiddlewares.forEach(globalMiddleware => {
+      app.use(globalMiddleware);
+    })
+  }
+
   _.each(resources, async ({ name: resourceName }) => {
     const resourceRouter = new Router();
     const globalRouter = new Router();
