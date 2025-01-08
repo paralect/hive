@@ -27,6 +27,16 @@ const zodSchemaToSchemaMappings = () => {
   return newSchemaMappings;
 };
 
+const isZodArray = (schema) => {
+  if (schema instanceof ZodArray) return true;
+
+  if (schema._def?.innerType) {
+    return isZodArray(schema._def.innerType);
+  }
+
+  return false;
+};
+
 export default async () => {
   const prevSchema = await schemaMappingService.findOne({});
   const prevSchemaMappings = prevSchema?.mappings;
@@ -63,7 +73,7 @@ export default async () => {
               );
               await Promise.all(
                 uniqueDependentEntities.map(async (entity) => {
-                  if (schema[fieldName] instanceof ZodArray) {
+                  if (isZodArray(schema.shape[fieldName])) {
                     await db.services[schemaName].atomic.update(
                       { [`${fieldName}._id`]: entity._id },
                       {
