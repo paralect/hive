@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { z } from 'zod';
+import isZodArray from "helpers/isZodArray";
 
 const getZodKeys = schema => {
   // make sure schema is not null or undefined
@@ -7,7 +8,7 @@ const getZodKeys = schema => {
   // check if schema is nullable or optional
   if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional) return getZodKeys(schema.unwrap());
   // check if schema is an array
-  if (schema instanceof z.ZodArray) return getZodKeys(schema.element);
+  if (isZodArray(schema)) return getZodKeys(schema.element);
   // check if schema is an object
   if (schema instanceof z.ZodObject) {
     // get key/value pairs from schema

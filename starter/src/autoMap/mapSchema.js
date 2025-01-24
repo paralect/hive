@@ -1,10 +1,9 @@
 import _ from "lodash";
 import db from "db";
-import fs from 'fs';
-import { z, ZodArray } from 'zod';
 
 import schemaMappings from "./schemaMappings";
 import getDependentFields from './getDependentFields';
+import isZodArray from "helpers/isZodArray";
 
 const schemaMappingService = db.services.schemaMappings;
 
@@ -27,15 +26,6 @@ const zodSchemaToSchemaMappings = () => {
   return newSchemaMappings;
 };
 
-const isZodArray = (schema) => {
-  if (schema instanceof ZodArray) return true;
-
-  if (schema._def?.innerType) {
-    return isZodArray(schema._def.innerType);
-  }
-
-  return false;
-};
 
 export default async () => {
   const prevSchema = await schemaMappingService.findOne({});

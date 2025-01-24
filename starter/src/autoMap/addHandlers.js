@@ -3,7 +3,7 @@ import db from "db";
 import ifUpdated from "helpers/db/ifUpdated";
 import schemaMappings from "./schemaMappings";
 import getDependentFields from './getDependentFields';
-import { ZodArray } from 'zod';
+import isZodArray from "helpers/isZodArray";
 
 const updatedSchemaMappings = (() => {
   const result = {};
@@ -103,7 +103,7 @@ const addOnDependentEntitiesUpdatedHandlers = ({ schemaName }) => {
       "updated",
       ifUpdated(dependentFields, async ({ doc }) => {
         const toUpdate = _.pick(doc, ["_id", ...dependentFields]);
-        if (schema.shape[dependentFieldName] instanceof ZodArray) {
+        if (isZodArray(schema.shape[dependentFieldName])) {
           db.services[schemaName].atomic.update(
             { [`${dependentFieldName}._id`]: doc._id },
             {
