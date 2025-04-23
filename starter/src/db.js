@@ -30,7 +30,7 @@ db.init = async () => {
 
       db.services[schemaName] = db.createService(`${resourceName}`, {
         validate: (obj) => {
-          return { value: schema.passthrough().parse(obj) };
+          return { value: schema.parse(obj) };
         },
         secureFields: secureFields,
       });
