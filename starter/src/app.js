@@ -14,6 +14,7 @@ import cors from "@koa/cors";
 import helmet from "koa-helmet";
 import qs from "koa-qs";
 import bodyParser from "koa-bodyparser";
+
 import requestLogger from "koa-logger";
 import db from "db";
 import socketIo from "socketIo";
@@ -42,15 +43,15 @@ const main = async () => {
   app.use(bodyParser({
     enableTypes: ["json", "form", "text"],
 
-    formLimit: '10mb',
-    textLimit: '10mb',
-    jsonLimit: '10mb',
+    formLimit: config._hive.bodyParser?.formLimit || "10mb",
+    textLimit: config._hive.bodyParser?.textLimit || "10mb",
+    jsonLimit: config._hive.bodyParser?.jsonLimit || "10mb",
   }));
 
   app.use(mount("/health", get.handler));
   app.use(requestLogger());
 
-  routes(app);
+  await routes(app);
 
   const server = http.createServer(app.callback());
 

@@ -18,6 +18,10 @@ const logRequestToMongo = async (ctx, next) => {
   const startedOn = new Date();
 
   const saveLog = async ({ error = null } = {}) => {
+    if (ctx.state.isSkipLog) {
+      return;
+    }
+
     if (ctx.state.resourceName && ctx.state.endpoint) {
       const requestLog = {
         isSuccess: true,
@@ -50,7 +54,9 @@ const logRequestToMongo = async (ctx, next) => {
 
   try {
     await next();
+
     await saveLog({ error: ctx.state.error });
+
   } catch (err) {
     await saveLog({ error: err });
     throw err;
@@ -65,7 +71,7 @@ export default async (app) => {
 
   const [resources, allMiddlewares] = await Promise.all([getResources(), getMiddlewares()]);
 
-  _.each(resources, async ({ name: resourceName }) => {
+  await Promise.all(_.map(resources, async ({ name: resourceName }) => {
     const resourceRouter = new Router();
     const globalRouter = new Router();
     const endpoints = await Promise.all((await getResourceEndpoints(resourceName))
@@ -92,7 +98,7 @@ export default async (app) => {
         }
         return -1;
       }));
-    
+
     endpoints.forEach(({ endpoint, requestSchema, middlewares = [], handler }) => {
       let targetRouter;
       console.log('[routes] Register endpoint', resourceName, endpoint?.method || 'GET', endpoint?.url);
@@ -162,5 +168,5 @@ export default async (app) => {
 
     app.use(globalRouter.routes());
     app.use(mount(`/${resourceName}`, resourceRouter.routes()));
-  });
+  }));
 };

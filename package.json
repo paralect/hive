@@ -1,6 +1,6 @@
 {
   "name": "@paralect/hive",
-  "version": "0.1.43",
+  "version": "0.1.48",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,6 @@
     "@koa/cors": "3.1.0",
     "@koa/multer": "3.0.0",
     "@koa/router": "10.1.1",
-    "@paralect/hive": "^0.1.19",
     "@paralect/node-mongo": "2.1.1",
     "@react-email/components": "^0.0.20",
     "@react-email/render": "^0.0.16",
