@@ -12,9 +12,13 @@ const tsx = require('tsx/cjs/api');
 const fs = require('fs');
 
 program
+  .version(require('../package.json').version, '-v, --version');
+
+program
   .command('init [projectName]')
   .description('Initialize a new Hive project')
-  .action(async (projectName) => {
+  .option('--skip-install', 'Skip npm install')
+  .action(async (projectName, options) => {
     try {
       let name = projectName;
 
@@ -31,42 +35,40 @@ program
       }
 
       const projectDir = path.resolve(process.cwd(), name);
+      const hiveVersion = require('../package.json').version;
 
       console.log(`\n🐝 Creating Hive project: ${name}\n`);
 
-      await execCommand(`mkdir -p ${projectDir}/src/resources`);
-      await execCommand(`mkdir -p ${projectDir}/src/middlewares`);
-      await execCommand(`mkdir -p ${projectDir}/src/services`);
-      await execCommand(`mkdir -p ${projectDir}/src/scheduler/handlers`);
+      const filesDir = path.resolve(__dirname, '../starter');
+      await execCommand(`cp -r ${filesDir}/. ${projectDir}/`);
 
-      fs.writeFileSync(
-        path.join(projectDir, 'package.json'),
-        JSON.stringify({
-          name,
-          version: '1.0.0',
-          scripts: {
-            dev: 'hive run ./src',
-            start: 'hive run ./src'
-          },
-          dependencies: {}
-        }, null, 2)
-      );
+      const templateFiles = ['package.json', '.env'];
+      const replacements = {
+        '{{PROJECT_NAME}}': name,
+        '{{HIVE_DEP}}': `^${hiveVersion}`,
+      };
 
-      fs.writeFileSync(
-        path.join(projectDir, '.env'),
-        `MONGO_URI=mongodb://localhost:27017/${name}\nPORT=3001\nNODE_ENV=development\n`
-      );
+      for (const file of templateFiles) {
+        const filePath = path.join(projectDir, file);
+        let content = fs.readFileSync(filePath, 'utf-8');
+        for (const [key, value] of Object.entries(replacements)) {
+          content = content.replaceAll(key, value);
+        }
+        fs.writeFileSync(filePath, content);
+      }
 
-      fs.writeFileSync(
-        path.join(projectDir, '.gitignore'),
-        `node_modules\n.hive\n.env\n`
-      );
+      const projectPkgPath = path.join(projectDir, 'package.json');
+      const projectPkg = JSON.parse(fs.readFileSync(projectPkgPath, 'utf-8'));
+      fs.writeFileSync(projectPkgPath, JSON.stringify(projectPkg, null, 2));
 
-      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/.cursor ${projectDir}/`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/framework/.cursor ${projectDir}/`);
+
+      if (!options.skipInstall) {
+        await execCommand(`npm install`, { cwd: projectDir });
+      }
 
       console.log(`✅ Project created!\n`);
       console.log(`Next steps:\n`);
-      console.log(`  cd ${name}`);
       console.log(`  hive run ./src\n`);
       console.log(`Start building with AI commands:`);
       console.log(`  add-resource tasks`);
@@ -85,9 +87,9 @@ program
 
       const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
       await execCommand(`mkdir -p ${hiveProjectDir}`);
-      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/ ${hiveProjectDir}`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/framework/ ${hiveProjectDir}`);
 
-      tsx.require(`${hiveProjectDir}/src/app.js`, __filename); // TSX doesn't work inside node_moduels
+      tsx.require(`${hiveProjectDir}/src/app.ts`, __filename); // TSX doesn't work inside node_moduels
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
@@ -102,7 +104,8 @@ program
       const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
 
       await execCommand(`mkdir -p ${hiveProjectDir}`);
-      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/starter/. ${hiveProjectDir}`);
+      await execCommand(`cp -r ${path.resolve(__dirname, '..')}/framework/. ${hiveProjectDir}`);
+      await execCommand(`npm install --prefix ${hiveProjectDir}`);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }

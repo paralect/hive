@@ -71,7 +71,7 @@ async function mergeDirectories(sourceDir1, sourceDir2, targetDir) {
 }
 
 module.exports = async ({ hiveSrc, outDir }) => {
-  await mergeDirectories(path.resolve(__dirname, './../../starter'), hiveSrc, outDir);
+  await mergeDirectories(path.resolve(__dirname, './../../framework'), hiveSrc, outDir);
 
   console.log('Merged resources');
 }

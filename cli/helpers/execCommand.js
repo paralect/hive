@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 
-const execa = require('execa');
 const mkdirp = require('mkdirp');
 
 const execCommand = async (command, options = {}, outputFileSrc = null) => {
@@ -20,29 +20,29 @@ const execCommand = async (command, options = {}, outputFileSrc = null) => {
 
         return commandPart;
       });
-
-    // commandParts = command.split(' ').filter((part) => !!part.trim());
   }
 
   const commandName = commandParts.shift();
   const commandArguments = commandParts;
 
-  const process = execa(commandName, commandArguments, {
+  const child = spawn(commandName, commandArguments, {
     stdio: outputFileSrc ? 'pipe' : 'inherit',
     ...options,
   });
 
   if (outputFileSrc) {
-    console.log('writing to outputFileSrc', outputFileSrc);
     const dir = path.dirname(outputFileSrc);
-
     await mkdirp(dir);
-    console.log(dir, fs.existsSync(dir));
-
-    process.stdout.pipe(fs.createWriteStream(outputFileSrc, { flags: 'a+' }));
+    child.stdout.pipe(fs.createWriteStream(outputFileSrc, { flags: 'a+' }));
   }
 
-  return process;
+  return new Promise((resolve, reject) => {
+    child.on('close', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Command "${command}" failed with exit code ${code}`));
+    });
+    child.on('error', reject);
+  });
 };
 
 module.exports = execCommand;

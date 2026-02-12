@@ -1,0 +1,176 @@
+{
+  "resources": [
+    {
+      "name": "users",
+      "endpoints": [
+        {
+          "name": "getCurrentUser",
+          "endpoint": { "method": "GET", "url": "/me" },
+          "requestSchema": {},
+          "handler": "module.exports.handler = async (ctx) => { const user = await userService.findOne({ _id: ctx.state.user._id }); ctx.body = user; }"
+        },
+        {
+          "name": "getUserProfile",
+          "endpoint": { "method": "GET", "url": "/profile/:userId" },
+          "requestSchema": {
+            "userId": "Joi.string().required()"
+          },
+          "handler": "module.exports.handler = async (ctx) => { const { userId } = ctx.params; const user = await userService.findOne({ _id: userId }); ctx.body = user; }"
+        }
+      ],
+      "handlers": [],
+      "methods": [],
+      "schemas": [
+        {
+          "name": "users",
+          "schema": {
+            "username": "Joi.string().required()",
+            "email": "Joi.string().email().required()",
+            "password": "Joi.string().required()",
+            "bio": "Joi.string()",
+            "avatarUrl": "Joi.string().uri()",
+            "_id": "Joi.string()",
+            "createdOn": "Joi.date()",
+            "updatedOn": "Joi.date()"
+          },
+          "_schemaMappings": {}
+        }
+      ]
+    },
+    {
+      "name": "follows",
+      "endpoints": [
+        {
+          "name": "followUser",
+          "endpoint": { "method": "POST", "url": "/" },
+          "requestSchema": {
+            "followingId": "Joi.string().required()"
+          },
+          "handler": "module.exports.handler = async (ctx) => { const { followingId } = ctx.validatedData; const followerId = ctx.state.user._id; const newFollow = await followService.create({ follower: { _id: followerId }, following: { _id: followingId } }); ctx.body = newFollow; }"
+        },
+        {
+          "name": "unfollowUser",
+          "endpoint": { "method": "DELETE", "url": "/" },
+          "requestSchema": {
+            "followingId": "Joi.string().required()"
+          },
+          "handler": "module.exports.handler = async (ctx) => { const { followingId } = ctx.validatedData; const followerId = ctx.state.user._id; await followService.remove({ follower: { _id: followerId }, following: { _id: followingId } }); ctx.body = { message: 'Unfollowed successfully' }; }"
+        }
+      ],
+      "handlers": [
+        {
+          "name": "updateFollowersCount",
+          "handler": "const userService = require('../../../db').services.users; const followService = require('../../../db').services.follows; followService.on('created', async ({ doc: follow }) => { const { followingId } = follow; await userService.atomic.update({ _id: followingId }, { $inc: { followersCount: 1 } }); }); followService.on('removed', async ({ doc: follow }) => { const { followingId } = follow; await userService.atomic.update({ _id: followingId }, { $inc: { followersCount: -1 } }); });"
+        }
+      ],
+      "methods": [],
+      "schemas": [
+        {
+          "name": "follows",
+          "schema": {
+            "follower": { "_id": "Joi.string().required()" },
+            "following": { "_id": "Joi.string().required()" },
+            "_id": "Joi.string()",
+            "createdOn": "Joi.date()",
+            "updatedOn": "Joi.date()"
+          },
+          "_schemaMappings": {}
+        }
+      ]
+    },
+    {
+      "name": "posts",
+      "endpoints": [
+        {
+          "name": "createPost",
+          "endpoint": { "method": "POST", "url": "/" },
+          "requestSchema": {
+            "content": "Joi.string().max(280).required()",
+            "fileUrl": "Joi.string().allow(null, '')"
+          },
+          "handler": "module.exports.handler = async (ctx) => { const { content, fileUrl } = ctx.validatedData; const userId = ctx.state.user._id; const username = ctx.state.user.username; const newPost = await postService.create({ content, fileUrl, creator: { _id: userId, username: username } }); ctx.body = newPost; }"
+        },
+        {
+          "name": "getFeed",
+          "endpoint": { "method": "GET", "url": "/feed" },
+          "requestSchema": {},
+          "handler": "module.exports.handler = async (ctx) => { const posts = await postService.find({}, { sort: { createdOn: -1 } }); ctx.body = posts; }"
+        },
+        {
+          "name": "likePost",
+          "endpoint": { "method": "POST", "url": "/:postId/like" },
+          "requestSchema": {},
+          "handler": "module.exports.handler = async (ctx) => { const { postId } = ctx.params; const userId = ctx.state.user._id; await likeService.create({ post: { _id: postId }, user: { _id: userId } }); await postService.atomic.update({ _id: postId }, { $inc: { likesCount: 1 } }); ctx.body = { message: 'Post liked' }; }"
+        },
+        {
+          "name": "commentOnPost",
+          "endpoint": { "method": "POST", "url": "/:postId/comment" },
+          "requestSchema": {
+            "content": "Joi.string().required()"
+          },
+          "handler": "module.exports.handler = async (ctx) => { const { postId } = ctx.params; const { content } = ctx.validatedData; const userId = ctx.state.user._id; const username = ctx.state.user.username; const newComment = await commentService.create({ post: { _id: postId }, content, creator: { _id: userId, username: username }, createdOn: new Date() }); await postService.atomic.update({ _id: postId }, { $inc: { commentsCount: 1 } }); ctx.body = newComment; }"
+        }
+      ],
+      "handlers": [
+        {
+          "name": "updateCommentsCount",
+          "handler": "const postService = require('../../../db').services.posts; const commentService = require('../../../db').services.comments; commentService.on('created', async ({ doc: comment }) => { const { post } = comment; await postService.atomic.update({ _id: post._id }, { $inc: { commentsCount: 1 } }); }); commentService.on('removed', async ({ doc: comment }) => { const { post } = comment; await postService.atomic.update({ _id: post._id }, { $inc: { commentsCount: -1 } }); });"
+        },
+        {
+          "name": "updateLikesCount",
+          "handler": "const postService = require('../../../db').services.posts; const likeService = require('../../../db').services.likes; likeService.on('created', async ({ doc: like }) => { const { postId } = like; await postService.atomic.update({ _id: postId }, { $inc: { likesCount: 1 } }); }); likeService.on('removed', async ({ doc: like }) => { const { postId } = like; await postService.atomic.update({ _id: postId }, { $inc: { likesCount: -1 } }); });"
+        },
+        {
+          "name": "notifyUserOnComment",
+          "handler": ""
+        }
+      ],
+      "methods": [],
+      "schemas": [
+        {
+          "name": "posts",
+          "schema": {
+            "content": "Joi.string().max(280).required()",
+            "fileUrl": "Joi.string().allow(null, '')",
+            "creator": {
+              "_id": "Joi.string().required()",
+              "username": "Joi.string()"
+            },
+            "likesCount": "Joi.number().default(0)",
+            "commentsCount": "Joi.number().default(0)",
+            "parentPost": {
+              "_id": "Joi.string()",
+              "content": "Joi.string()",
+              "creator": "Joi.object()",
+              "likesCount": "Joi.number().default(0)",
+              "commentsCount": "Joi.number().default(0)"
+            },
+            "_id": "Joi.string()",
+            "createdOn": "Joi.date()",
+            "updatedOn": "Joi.date()"
+          },
+          "_schemaMappings": {}
+        }
+      ]
+    },
+    {
+      "name": "likes",
+      "endpoints": [],
+      "handlers": [],
+      "methods": [],
+      "schemas": [
+        {
+          "name": "likes",
+          "schema": {
+            "post": { "_id": "Joi.string().required()" },
+            "user": { "_id": "Joi.string().required()" },
+            "_id": "Joi.string()",
+            "createdOn": "Joi.date()",
+            "updatedOn": "Joi.date()"
+          },
+          "_schemaMappings": {}
+        }
+      ]
+    }
+  ]
+}

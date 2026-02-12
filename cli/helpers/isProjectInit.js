@@ -5,9 +5,9 @@ const inquirer = require('inquirer');
 
 module.exports = async () => {
   if (!process.env.PROJECT_ID) {
-    let projectConfigPath = path.resolve(process.env.HIVE_SRC, './hive.config.js');
-    
-    if (fs.existsSync(projectConfigPath)) {
+    let projectConfigPath = [path.resolve(process.env.HIVE_SRC, './hive.config.ts'), path.resolve(process.env.HIVE_SRC, './hive.config.js')].find(p => fs.existsSync(p));
+
+    if (projectConfigPath) {
       const config = require(projectConfigPath);
       if (config.projectId) {
         process.env.PROJECT_ID = config.projectId;

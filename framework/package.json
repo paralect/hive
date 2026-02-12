@@ -1,0 +1,43 @@
+{
+  "name": "koa-api-starter",
+  "version": "2.3.0",
+  "description": "Koa api",
+  "private": false,
+  "main": "src/app.ts",
+  "author": "Paralect",
+  "license": "MIT",
+  "keywords": [
+    "koa",
+    "rest api",
+    "paralect"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paralect/koa-api-starter.git"
+  },
+  "scripts": {
+    "build-assets": "mjml ./src/assets/emails/*.mjml -o ./src/assets/emails/dist/",
+    "build-emails": "babel src/emails --out-dir src/emails/compiled",
+    "dev": "tsx watch --include \"$HIVE_SRC\" src/app.ts",
+    "init-project": "./bin/init-project.sh",
+    "start": "tsx src/app.ts",
+    "migrate": "node ./src/migrator.ts",
+    "schedule-dev": "nodemon --watch ./src ./src/scheduler ./src/scheduler.ts",
+    "schedule": "node ./src/scheduler.ts",
+    "precommit": "lint-staged",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "tsx": "^4.21.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ],
+    ".js": [
+      "npm run lint:fix",
+      "npm run lint"
+    ]
+  }
+}

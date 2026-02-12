@@ -1,0 +1,3 @@
+nodePool: pool-app
+containerRegistry: paralect/hive-api
+port: 3001
