@@ -9,9 +9,15 @@
 		"noEmit": true,
 		"baseUrl": ".",
 		"paths": {
-			"@hive": [".hive/src/index"],
-			"@hive/*": [".hive/src/*"],
-			"@/*": ["hive/*"]
+			"@hive": [
+				".hive/src/index"
+			],
+			"@hive/*": [
+				".hive/src/*"
+			],
+			"@/*": [
+				"hive/*"
+			]
 		}
 	},
 	"include": [

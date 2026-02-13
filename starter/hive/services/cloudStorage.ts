@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import axios from 'axios';
-import config from '@hive/app-config';
+import config from '@/app-config';
 
 const Bucket = config.cloudStorage.bucket;
 const spacesEndpoint = config.cloudStorage.secretAccessKey ? new AWS.Endpoint(config.cloudStorage.endpoint) : null;

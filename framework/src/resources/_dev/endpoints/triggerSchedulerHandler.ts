@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import allowNoAuth from 'middlewares/allowNoAuth';
 
 export const endpoint = {
   method: "put",
@@ -29,4 +30,4 @@ export const handler = async (ctx) => {
   }
 };
 
-export const middlewares = ['allowNoAuth'];
+export const middlewares = [allowNoAuth];

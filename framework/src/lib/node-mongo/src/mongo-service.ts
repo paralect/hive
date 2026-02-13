@@ -15,7 +15,11 @@ const defaultOptions = {
   onBeforeCreated: ({ docs }) => docs,
 };
 
-class MongoService extends MongoQueryService {
+class MongoService<TDoc = any> extends MongoQueryService<TDoc> {
+  _bus: EventEmitter;
+  generateId: () => string;
+  atomic: Record<string, any>;
+
   constructor(collection, options = {}) {
     super(collection, options);
     _.defaults(this._options, defaultOptions);
@@ -108,6 +112,10 @@ class MongoService extends MongoQueryService {
     return this._bus.once(`${this._collection.name}:${eventName}`, handler);
   }
 
+  on(eventName: 'created', handler: (event: { doc: TDoc }) => void): void;
+  on(eventName: 'updated', handler: (event: { doc: TDoc; prevDoc: TDoc }) => void): void;
+  on(eventName: 'removed', handler: (event: { doc: TDoc }) => void): void;
+  on(eventName: string, handler: (event: any) => void): void;
   on(eventName, handler) {
     return this._bus.on(`${this._collection.name}:${eventName}`, handler);
   }
@@ -139,7 +147,7 @@ class MongoService extends MongoQueryService {
     });
   }
 
-  async create(objs, options = {}) {
+  async create(objs, options = {}): Promise<TDoc | TDoc[]> {
     const entities = _.isArray(objs) ? objs : [objs];
 
     let created = await Promise.all(
@@ -174,7 +182,7 @@ class MongoService extends MongoQueryService {
     return created.length > 1 ? created : created[0];
   }
 
-  async updateOne(query, updateFn, options = {}) {
+  async updateOne(query, updateFn: (doc: TDoc) => TDoc, options = {}): Promise<TDoc> {
     if (!_.isFunction(updateFn)) {
       throw new MongoServiceError(
         MongoServiceError.INVALID_ARGUMENT,
@@ -192,15 +200,15 @@ class MongoService extends MongoQueryService {
       );
     }
 
-    let entity = _.cloneDeep(doc);
+    let entity: any = _.cloneDeep(doc);
 
     if (this._options.addUpdatedOnField)
       entity.updatedOn = new Date().toISOString();
     entity = await updateFn(entity);
-    let updated = await this._validate(entity);
+    let updated: any = await this._validate(entity);
 
     await this._collection.update(
-      { ...query, _id: doc._id },
+      { ...query, _id: (doc as any)._id },
       { $set: updated },
       options
     );
@@ -216,7 +224,7 @@ class MongoService extends MongoQueryService {
     return updated;
   }
 
-  async updateMany(query, updateFn, options = {}) {
+  async updateMany(query, updateFn: (doc: TDoc) => TDoc, options = {}): Promise<TDoc[]> {
     if (!_.isFunction(updateFn)) {
       throw new MongoServiceError(
         MongoServiceError.INVALID_ARGUMENT,
@@ -231,7 +239,7 @@ class MongoService extends MongoQueryService {
 
     let updated = await Promise.all(
       docs.map(async (doc) => {
-        let entity = _.cloneDeep(doc);
+        let entity: any = _.cloneDeep(doc);
 
         if (this._options.addUpdatedOnField)
           entity.updatedOn = new Date().toISOString();
@@ -264,7 +272,7 @@ class MongoService extends MongoQueryService {
     return updated;
   }
 
-  async remove(query, options = {}) {
+  async remove(query, options = {}): Promise<{ results: TDoc[] }> {
     const findOptions = {};
     if (options.session) findOptions.session = options.session;
     const removed = await this.find(query, findOptions);

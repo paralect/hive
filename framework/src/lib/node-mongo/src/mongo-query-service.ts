@@ -1,7 +1,18 @@
 import _ from 'lodash';
 import MongoServiceError from './mongo-service-error';
 
-class MongoQueryService {
+class MongoQueryService<TDoc = any> {
+  _collection: any;
+  _options: any;
+  name: string;
+  aggregate: any;
+  count: any;
+  distinct: any;
+  geoHaystackSearch: any;
+  indexes: any;
+  mapReduce: any;
+  stats: any;
+
   constructor(collection, options = {}) {
     this._collection = collection;
     this._options = options;
@@ -17,7 +28,7 @@ class MongoQueryService {
     this.stats = collection.stats;
   }
 
-  async find(query = {}, opt = { perPage: 100, page: 0 }) {
+  async find(query = {}, opt = { perPage: 100, page: 0 }): Promise<{ results: TDoc[]; pagesCount?: number; count?: number }> {
     const options = _.cloneDeep(opt);
     const { page, perPage } = options;
     const hasPaging = page > 0;
@@ -49,7 +60,7 @@ class MongoQueryService {
     };
   }
 
-  async findOne(query = {}, options = {}) {
+  async findOne(query = {}, options = {}): Promise<TDoc | null> {
     const { results } = await this.find(query, { limit: 2, ...options });
 
     // if (results.length > 1) {
@@ -63,13 +74,13 @@ class MongoQueryService {
     let result = results[0] || null;
 
     if (result && !options.isIncludeSecureFields) {
-      result = _.omit(result, this._options.secureFields || []);
+      result = _.omit(result as any, this._options.secureFields || []) as TDoc;
     }
-    
-    return result;
+
+    return result as TDoc | null;
   }
 
-  async exists(query, options = {}) {
+  async exists(query, options = {}): Promise<boolean> {
     const count = await this.count(query, { limit: 1, ...options });
     return count > 0;
   }

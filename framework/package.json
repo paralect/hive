@@ -24,8 +24,7 @@
     "migrate": "node ./src/migrator.ts",
     "schedule-dev": "nodemon --watch ./src ./src/scheduler ./src/scheduler.ts",
     "schedule": "node ./src/scheduler.ts",
-    "precommit": "lint-staged",
-    "prepare": "husky install"
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "tsx": "^4.21.0"
