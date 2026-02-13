@@ -1,4 +1,4 @@
-import config from 'app-config';
+import config from 'config';
 import nodemailer from 'nodemailer';
 
 config.assert('smtp');

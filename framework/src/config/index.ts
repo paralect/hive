@@ -6,24 +6,24 @@ import appConfig from "./app";
 dotenv.config({ path: `${__dirname}/.env` });
 dotenv.config({ path: `${__dirname}/.env.app` });
 
-console.log('process.env.HIVE_SRC', process.env.HIVE_SRC)
-
 if (process.env.HIVE_SRC) {
   dotenv.config({
-    path: `${process.env.HIVE_SRC}/app-config/.env`,
+    path: `${process.env.HIVE_SRC}/config/.env`,
   });
 
   dotenv.config({
-    path: `${process.env.HIVE_SRC}/app-config/.env.app`,
+    path: `${process.env.HIVE_SRC}/config/.env.app`,
   });
 }
+
+console.log('process.env.HIVE_SRC', process.env.HIVE_SRC)
 
 const env = process.env.APP_ENV || "development";
 
 let config = {
   async init() {
     if (process.env.HIVE_SRC) {
-      let pluginConfigPath = [`${process.env.HIVE_SRC}/app-config/app.ts`, `${process.env.HIVE_SRC}/app-config/app.js`].find(p => fs.existsSync(p));
+      let pluginConfigPath = [`${process.env.HIVE_SRC}/config/app.ts`, `${process.env.HIVE_SRC}/config/app.js`].find(p => fs.existsSync(p));
 
       if (pluginConfigPath) {
         const { default: pluginConfig } = await (import(pluginConfigPath))

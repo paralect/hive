@@ -9,7 +9,7 @@ import db from "db";
 import extractUserTokens from "middlewares/global/extractUserTokens";
 import attachCustomErrors from "./middlewares/attachCustomErrors";
 import routeErrorHandler from "./middlewares/routeErrorHandler";
-import config from 'app-config';
+import config from 'config';
 
 const requestLogService = db.createService("_request_logs");
 

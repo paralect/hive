@@ -36,7 +36,7 @@ When creating a service, use these go-to libraries:
 ## Template
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 
 // Initialize client here
 
@@ -52,7 +52,7 @@ export default {
 ### `add-service slack sendChannelMessage, replyToThread`
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import { WebClient } from '@slack/web-api';
 
 const client = new WebClient(config.slack.botToken);
@@ -73,7 +73,7 @@ export default {
 ### `add-service stripe createCustomer, createPaymentIntent, listInvoices`
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import Stripe from 'stripe';
 
 const client = new Stripe(config.stripe.secretKey);
@@ -102,7 +102,7 @@ export default {
 ### `add-service openai chat, generateImage`
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import OpenAI from 'openai';
 
 const client = new OpenAI({ apiKey: config.openai.apiKey });
@@ -125,7 +125,7 @@ export default {
 ### `add-service sendgrid sendEmail, sendTemplateEmail`
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(config.sendgrid.apiKey);
@@ -144,7 +144,7 @@ export default {
 ### `add-service s3 upload, getSignedUrl, delete`
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 

@@ -15,7 +15,7 @@ Location: `/src/services/{name}.js`
 ## API Client Template
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import axios from 'axios';
 
 const client = axios.create({
@@ -41,7 +41,7 @@ export default {
 ## SDK Wrapper Template
 
 ```javascript
-import config from 'app-config';
+import config from 'config';
 import { WebClient } from '@slack/web-api';
 
 const client = new WebClient(config.slack.botToken);

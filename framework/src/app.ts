@@ -8,7 +8,7 @@ if (process.env.HIVE_SRC) {
 
 import Koa from "koa";
 import http from "http";
-import config from "app-config";
+import config from "config";
 import logger from "logger";
 import cors from "@koa/cors";
 import helmet from "koa-helmet";

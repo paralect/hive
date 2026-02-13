@@ -39,7 +39,7 @@ src/resources/{name}/
 
 ```javascript
 import db from 'db';                    // Database
-import config from 'app-config';        // Config
+import config from 'config';        // Config
 import { z } from 'zod';                // Validation
 ```
 

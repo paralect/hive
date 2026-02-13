@@ -1,6 +1,6 @@
 import psl from 'psl';
 import url from 'url';
-import { webUri } from '@hive/app-config';
+import { webUri } from '@hive/config';
 
 let cookiesDomain;
 

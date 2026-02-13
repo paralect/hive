@@ -1,5 +1,5 @@
 import { db } from '@hive';
-import config from '@hive/app-config';
+import config from '@hive/config';
 
 const userService = db.services.users;
 const tokenService = db.services.tokens;

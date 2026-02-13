@@ -1,5 +1,5 @@
 import winston from 'winston';
-import config from 'app-config';
+import config from 'config';
 import fs from 'fs';
 
 const colorizer = winston.format.colorize();
@@ -7,7 +7,7 @@ const colorizer = winston.format.colorize();
 let appTransports = [];
 
 if (process.env.HIVE_SRC) {
-  const loggerPath = [`${process.env.HIVE_SRC}/app-config/logger.ts`, `${process.env.HIVE_SRC}/app-config/logger.js`].find(p => fs.existsSync(p));
+  const loggerPath = [`${process.env.HIVE_SRC}/config/logger.ts`, `${process.env.HIVE_SRC}/config/logger.js`].find(p => fs.existsSync(p));
   if (loggerPath) {
     try {
       appTransports = require(loggerPath).transports;

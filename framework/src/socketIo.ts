@@ -2,7 +2,7 @@ import db from 'db';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
-import config from 'app-config';
+import config from 'config';
 import logger from 'logger';
 
 export default (server) => {

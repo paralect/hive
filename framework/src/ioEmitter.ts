@@ -1,4 +1,4 @@
-import config from 'app-config';
+import config from 'config';
 import { Emitter } from '@socket.io/redis-emitter';
 import { createClient } from 'redis';
 

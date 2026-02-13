@@ -75,6 +75,7 @@ program
   .command('init [projectName]')
   .description('Initialize a new Hive project')
   .option('--skip-install', 'Skip npm install')
+  .option('--link', 'Use local file:.. dependency for @paralect/hive (for development)')
   .action(async (projectName, options) => {
     try {
       let name = projectName;
@@ -99,10 +100,17 @@ program
       const filesDir = path.resolve(__dirname, '../starter');
       await execCommand(`cp -r ${filesDir}/. ${projectDir}/`);
 
-      const templateFiles = ['package.json', '.env'];
+      // Rename .env.example to .env (stored as .example to avoid gitignore)
+      const envExample = path.join(projectDir, 'hive', 'config', '.env.example');
+      const envFile = path.join(projectDir, 'hive', 'config', '.env');
+      if (fs.existsSync(envExample)) {
+        fs.renameSync(envExample, envFile);
+      }
+
+      const templateFiles = ['package.json'];
       const replacements = {
         '{{PROJECT_NAME}}': name,
-        '{{HIVE_DEP}}': `^${hiveVersion}`,
+        '{{HIVE_DEP}}': options.link ? `file:${path.relative(projectDir, path.resolve(__dirname, '..'))}` : `^${hiveVersion}`,
       };
 
       for (const file of templateFiles) {

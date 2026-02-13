@@ -1,4 +1,4 @@
-import config from 'app-config';
+import config from 'config';
 import bullMq from './bullMq';
 const queue = bullMq.Queue(`database-${config.env}`);
 

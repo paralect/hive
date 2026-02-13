@@ -1,4 +1,4 @@
-import config from 'app-config';
+import config from 'config';
 import { Queue, Worker } from 'bullMq';
 
 let connectionOpts = {

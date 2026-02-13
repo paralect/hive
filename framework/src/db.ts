@@ -4,7 +4,7 @@ import getSchemas from "helpers/getSchemas";
 import getResources from "helpers/getResources";
 import importHandlers from "helpers/importHandlers";
 import generateDbTypes from "helpers/generateDbTypes";
-import config from "app-config";
+import config from "config";
 import { connect } from "lib/node-mongo";
 import type { DbServices } from "./_generated/db.types";
 import type MongoService from "lib/node-mongo/src/mongo-service";
