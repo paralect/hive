@@ -1,15 +1,24 @@
 {
   "name": "{{PROJECT_NAME}}",
-  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/web"
+  ],
   "scripts": {
-    "prepare": "hive prepare ./hive",
-    "dev": "hive prepare ./hive && HIVE_SRC=$PWD/hive npm -C .hive run dev",
-    "start": "hive prepare ./hive && HIVE_SRC=$PWD/hive npm -C .hive run start"
+    "dev": "turbo run dev dev:api",
+    "dev:api": "hive prepare ./apps/api && HIVE_SRC=$PWD/apps/api npm -C .hive run dev",
+    "prepare": "hive prepare ./apps/api",
+    "start": "hive prepare ./apps/api && HIVE_SRC=$PWD/apps/api npm -C .hive run start",
+    "build": "turbo run build"
   },
   "dependencies": {
     "@koa/multer": "^4.0.0",
     "@paralect/hive": "{{HIVE_DEP}}",
     "lodash": "^4.17.23",
     "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "turbo": "^2"
   }
 }

@@ -17,19 +17,19 @@
 			"*": [
 				"src/*",
 				".hive/*",
-				"../hive/*"
+				"../apps/api/*"
 			],
 			"@hive": ["src/index"],
 			"@hive/*": ["src/*"],
 			"@/*": [
 				".hive/*",
-				"../hive/*"
+				"../apps/api/*"
 			],
 		}
 	},
 	"include": [
 		"src/**/*",
 		".hive/**/*",
-		"../hive/**/*"
+		"../apps/api/**/*"
 	]
 }
