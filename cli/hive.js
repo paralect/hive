@@ -3,13 +3,15 @@
 const { program } = require('commander');
 
 const path = require('path');
-const inquirer = require('inquirer');
 const mergeDirs = require('./helpers/mergeDirs');
 const execCommand = require('./helpers/execCommand');
 const downloadDirectory = require('./helpers/downloadDirectory');
-const axios = require('axios');
 const tsx = require('tsx/cjs/api');
 const fs = require('fs');
+
+// ESM-only packages — lazy-loaded via dynamic import
+const getInquirer = () => import('inquirer').then(m => m.default || m);
+const getAxios = () => import('axios').then(m => m.default || m);
 
 program
   .version(require('../package.json').version, '-v, --version');
@@ -76,11 +78,12 @@ program
   .description('Initialize a new Hive project')
   .option('--skip-install', 'Skip npm install')
   .option('--link', 'Use local file:.. dependency for @paralect/hive (for development)')
-  .action(async (projectName, options) => {
+  .action(async (nameArg, options) => {
     try {
-      let name = projectName;
+      let name = nameArg;
 
       if (!name) {
+        const inquirer = await getInquirer();
         const answer = await inquirer.prompt([
           {
             type: 'input',
@@ -93,24 +96,26 @@ program
       }
 
       const projectDir = path.resolve(process.cwd(), name);
+      const projectName = path.basename(projectDir);
       const hiveVersion = require('../package.json').version;
 
-      console.log(`\n🐝 Creating Hive project: ${name}\n`);
+      console.log(`\n🐝 Creating Hive project: ${projectName}\n`);
 
       const filesDir = path.resolve(__dirname, '../starter');
       await execCommand(`cp -r ${filesDir}/. ${projectDir}/`);
 
       // Rename .env.example to .env (stored as .example to avoid gitignore)
-      const envExample = path.join(projectDir, 'hive', 'config', '.env.example');
-      const envFile = path.join(projectDir, 'hive', 'config', '.env');
+      const envExample = path.join(projectDir, 'apps', 'api', 'config', '.env.example');
+      const envFile = path.join(projectDir, 'apps', 'api', 'config', '.env');
       if (fs.existsSync(envExample)) {
         fs.renameSync(envExample, envFile);
       }
 
-      const templateFiles = ['package.json'];
+      const templateFiles = ['package.json', 'apps/web/package.json'];
+      const hiveRepoDir = path.resolve(__dirname, '..');
       const replacements = {
-        '{{PROJECT_NAME}}': name,
-        '{{HIVE_DEP}}': options.link ? `file:${path.relative(projectDir, path.resolve(__dirname, '..'))}` : `^${hiveVersion}`,
+        '{{PROJECT_NAME}}': projectName,
+        '{{HIVE_DEP}}': options.link ? `file:${path.relative(projectDir, hiveRepoDir)}` : `^${hiveVersion}`,
       };
 
       for (const file of templateFiles) {
@@ -134,10 +139,11 @@ program
 
       console.log(`✅ Project created!\n`);
       console.log(`Next steps:\n`);
-      console.log(`  hive run ./src\n`);
-      console.log(`Start building with AI commands:`);
-      console.log(`  add-resource tasks`);
-      console.log(`  add-endpoint tasks post title, status\n`);
+      console.log(`  cd ${path.relative(process.cwd(), projectDir)}`);
+      console.log(`  npm run dev\n`);
+      console.log(`Monorepo structure:`);
+      console.log(`  apps/api  — Hive API server`);
+      console.log(`  apps/web  — Next.js frontend\n`);
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
@@ -150,7 +156,7 @@ program
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
 
-      const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
+      const hiveProjectDir = path.resolve(process.cwd(), '.hive');
       await execCommand(`mkdir -p ${hiveProjectDir}`);
       await execCommand(`cp -r ${path.resolve(__dirname, '..')}/framework/ ${hiveProjectDir}`);
 
@@ -169,7 +175,7 @@ program
   .action(async (dirPath = '.') => {
     try {
       process.env.HIVE_SRC = path.resolve(process.cwd(), dirPath);
-      const hiveProjectDir = path.resolve(process.env.HIVE_SRC, `../.hive`);
+      const hiveProjectDir = path.resolve(process.cwd(), '.hive');
 
       await execCommand(`mkdir -p ${hiveProjectDir}`);
       await execCommand(`cp -r ${path.resolve(__dirname, '..')}/framework/. ${hiveProjectDir}`);
@@ -219,6 +225,9 @@ program
   .command('login')
   .description('Login into Hive Cloud')
   .action(async () => {
+    const axios = await getAxios();
+    const inquirer = await getInquirer();
+
     if (process.env.HIVE_TOKEN) {
       const user = (await axios({
         url: `https://hive-api-test.paralect.co/users/me`, method: 'get', headers: {
